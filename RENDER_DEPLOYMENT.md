@@ -36,7 +36,7 @@ git push origin main
 | **Region** | `Singapore (Southeast Asia)` or `Tokyo` *(closest to TiDB `ap-northeast-1`)* |
 | **Root Directory** | `gold-army-backend` |
 | **Runtime** | `Node` |
-| **Build Command** | `npm install && npx prisma generate && npm run build` |
+| **Build Command** | `npm install --include=dev && npx prisma generate && npm run build` |
 | **Start Command** | `npm start` |
 | **Instance Type** | `Free` or `Starter` |
 
