@@ -1,0 +1,430 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  TRAINER
+  MEMBER
+}
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+}
+enum SubscriptionStatus {
+  ACTIVE
+  EXPIRING_SOON
+  EXPIRED
+  FROZEN
+  PAYMENT_PENDING
+}
+enum PaymentStatus {
+  PENDING
+  SUCCESSFUL
+  FAILED
+  REFUNDED
+}
+enum PaymentMethod {
+  CASH
+  UPI
+  CARD
+  RAZORPAY
+}
+enum AttendanceMethod {
+  QR
+  MANUAL
+}
+enum SessionStatus {
+  UPCOMING
+  COMPLETED
+  CANCELLED
+}
+enum DietType {
+  VEGETARIAN
+  NON_VEGETARIAN
+  EGGETARIAN
+}
+enum NotificationAudience {
+  ALL_MEMBERS
+  SELECTED_MEMBERS
+  EXPIRING_MEMBERS
+  EXPIRED_MEMBERS
+  SPECIFIC_SERVICE
+  SPECIFIC_PLAN
+}
+
+model User {
+  id              String @id @default(cuid())
+  phone           String? @unique
+  email           String? @unique
+  passwordHash    String
+  name            String
+  role            Role @default(MEMBER)
+  status          UserStatus @default(ACTIVE)
+  refreshTokenHash String? @db.VarChar(255)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  member          Member?
+  trainer         Trainer?
+  notifications   Notification[]
+  notificationLogs NotificationLog[]
+  @@index([role, status])
+}
+
+model Member {
+  id              String @id @default(cuid())
+  userId          String @unique
+  user            User @relation(fields: [userId], references: [id])
+  dateOfBirth     DateTime?
+  gender          String?
+  heightCm        Decimal? @db.Decimal(5,2)
+  weightKg        Decimal? @db.Decimal(5,2)
+  fitnessGoal     String?
+  emergencyPhone  String?
+  isActive        Boolean @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  subscriptions   Subscription[]
+  payments        Payment[]
+  attendance      Attendance[]
+  assignedTrainers TrainerMember[]
+  assignedWorkouts MemberWorkout[]
+  dietPlans       MemberDietPlan[]
+  ptSessions      PtSession[]
+  progress        Progress[]
+  notifications   NotificationRecipient[]
+  referralFrom    Referral[] @relation("Referrer")
+  referralTo      Referral[] @relation("Referred")
+  @@index([isActive])
+}
+
+model Trainer {
+  id              String @id @default(cuid())
+  userId          String @unique
+  user            User @relation(fields: [userId], references: [id])
+  specialization  String?
+  experienceYears Int?
+  isActive        Boolean @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  members         TrainerMember[]
+  ptSessions      PtSession[]
+  workouts        Workout[]
+  dietPlans       DietPlan[]
+}
+
+model TrainerMember {
+  trainerId String
+  memberId  String
+  trainer   Trainer @relation(fields: [trainerId], references: [id], onDelete: Cascade)
+  member    Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  assignedAt DateTime @default(now())
+  @@id([trainerId, memberId])
+}
+
+model Service {
+  id          String @id @default(cuid())
+  name        String @unique
+  description String?
+  isActive    Boolean @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  planServices PlanService[]
+  subscriptions Subscription[]
+  attendance Attendance[]
+  @@index([isActive])
+}
+
+model Plan {
+  id             String @id @default(cuid())
+  name           String
+  durationMonths Int?
+  durationDays   Int?
+  price          Decimal @db.Decimal(10,2)
+  discount       Decimal @default(0) @db.Decimal(10,2)
+  isPopular      Boolean @default(false)
+  isPremium      Boolean @default(false)
+  isActive       Boolean @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  services       PlanService[]
+  subscriptions  Subscription[]
+  coupons        CouponPlan[]
+  @@index([isActive, isPopular])
+}
+
+model PlanService {
+  planId String
+  serviceId String
+  plan Plan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  @@id([planId, serviceId])
+}
+
+model Subscription {
+  id          String @id @default(cuid())
+  memberId    String
+  planId      String
+  serviceId   String
+  startDate   DateTime
+  endDate     DateTime
+  status      SubscriptionStatus @default(PAYMENT_PENDING)
+  frozenAt    DateTime?
+  frozenUntil DateTime?
+  discount    Decimal @default(0) @db.Decimal(10,2)
+  isDeleted   Boolean @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  member      Member @relation(fields: [memberId], references: [id])
+  plan        Plan @relation(fields: [planId], references: [id])
+  service     Service @relation(fields: [serviceId], references: [id])
+  payments    Payment[]
+  @@index([memberId, status])
+  @@index([endDate, status])
+}
+
+model Payment {
+  id            String @id @default(cuid())
+  memberId      String
+  subscriptionId String?
+  amount        Decimal @db.Decimal(10,2)
+  discount      Decimal @default(0) @db.Decimal(10,2)
+  finalAmount   Decimal @db.Decimal(10,2)
+  method        PaymentMethod
+  transactionId String? @unique
+  status        PaymentStatus @default(PENDING)
+  paidAt        DateTime?
+  refundedAt    DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  member        Member @relation(fields: [memberId], references: [id])
+  subscription  Subscription? @relation(fields: [subscriptionId], references: [id])
+  @@index([memberId, status])
+  @@index([createdAt, status])
+}
+
+model Attendance {
+  id           String @id @default(cuid())
+  memberId     String
+  serviceId    String?
+  checkInDate  DateTime @db.Date
+  checkInTime  DateTime
+  method       AttendanceMethod
+  member       Member @relation(fields: [memberId], references: [id])
+  service      Service? @relation(fields: [serviceId], references: [id])
+  createdAt    DateTime @default(now())
+  @@unique([memberId, checkInDate])
+  @@index([checkInDate])
+}
+
+model Exercise {
+  id            String @id @default(cuid())
+  name          String
+  targetMuscle  String
+  difficulty    String
+  instructions  String? @db.Text
+  videoUrl      String? @db.VarChar(500)
+  imageUrl      String? @db.VarChar(500)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  workoutItems  WorkoutExercise[]
+}
+
+model Workout {
+  id          String @id @default(cuid())
+  trainerId   String?
+  name        String
+  goal        String
+  notes       String?
+  durationMin Int?
+  calories    Int?
+  isDeleted   Boolean @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  trainer     Trainer? @relation(fields: [trainerId], references: [id])
+  exercises   WorkoutExercise[]
+  assignments MemberWorkout[]
+}
+
+model WorkoutExercise {
+  workoutId  String
+  exerciseId String
+  order      Int
+  sets       Int
+  reps       Int
+  weight     String?
+  restSec    Int?
+  trainerNotes String?
+  workout    Workout @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  exercise   Exercise @relation(fields: [exerciseId], references: [id])
+  @@id([workoutId, exerciseId])
+}
+
+model MemberWorkout {
+  memberId  String
+  workoutId String
+  assignedAt DateTime @default(now())
+  completedAt DateTime?
+  member    Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  workout   Workout @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  @@id([memberId, workoutId])
+}
+
+model DietPlan {
+  id          String @id @default(cuid())
+  trainerId   String?
+  name        String
+  goal        String
+  dietType    DietType
+  calories    Int
+  proteinG    Int
+  carbsG      Int
+  fatsG       Int
+  budget      Decimal? @db.Decimal(10,2)
+  isDeleted   Boolean @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  trainer     Trainer? @relation(fields: [trainerId], references: [id])
+  meals       DietMeal[]
+  assignments MemberDietPlan[]
+}
+
+model DietMeal {
+  id            String @id @default(cuid())
+  dietPlanId    String
+  mealType      String
+  timing        String
+  name          String
+  quantity      String?
+  calories      Int
+  proteinG      Int
+  estimatedCost Decimal? @db.Decimal(10,2)
+  preparationNotes String?
+  dietPlan      DietPlan @relation(fields: [dietPlanId], references: [id], onDelete: Cascade)
+  @@index([dietPlanId, mealType])
+}
+
+model MemberDietPlan {
+  memberId  String
+  dietPlanId String
+  assignedAt DateTime @default(now())
+  member    Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  dietPlan  DietPlan @relation(fields: [dietPlanId], references: [id], onDelete: Cascade)
+  @@id([memberId, dietPlanId])
+}
+
+model PtSession {
+  id        String @id @default(cuid())
+  memberId  String
+  trainerId String
+  startsAt  DateTime
+  endsAt    DateTime?
+  status    SessionStatus @default(UPCOMING)
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  member    Member @relation(fields: [memberId], references: [id])
+  trainer   Trainer @relation(fields: [trainerId], references: [id])
+  @@index([trainerId, startsAt, status])
+  @@index([memberId, startsAt])
+}
+
+model Progress {
+  id          String @id @default(cuid())
+  memberId    String
+  measuredAt  DateTime @default(now())
+  weightKg    Decimal? @db.Decimal(5,2)
+  bodyFat     Decimal? @db.Decimal(5,2)
+  measurements Json?
+  photoUrls   Json?
+  notes       String?
+  personalRecords Json?
+  member      Member @relation(fields: [memberId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  @@index([memberId, measuredAt])
+}
+
+model Notification {
+  id          String @id @default(cuid())
+  createdById String?
+  title       String
+  message     String
+  audience    NotificationAudience
+  scheduledAt DateTime?
+  sentAt      DateTime?
+  createdAt   DateTime @default(now())
+  createdBy   User? @relation(fields: [createdById], references: [id])
+  recipients  NotificationRecipient[]
+  logs        NotificationLog[]
+  @@index([audience, createdAt])
+}
+
+model NotificationRecipient {
+  notificationId String
+  memberId       String
+  readAt         DateTime?
+  notification   Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+  member         Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  @@id([notificationId, memberId])
+}
+
+model NotificationLog {
+  id             String @id @default(cuid())
+  notificationId String?
+  userId         String?
+  dedupeKey      String @unique
+  channel        String
+  sentAt         DateTime @default(now())
+  notification   Notification? @relation(fields: [notificationId], references: [id])
+  user           User? @relation(fields: [userId], references: [id])
+}
+
+model Offer {
+  id          String @id @default(cuid())
+  name        String
+  description String?
+  discount    Decimal @db.Decimal(10,2)
+  startsAt    DateTime
+  endsAt      DateTime
+  isActive    Boolean @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Coupon {
+  id         String @id @default(cuid())
+  code       String @unique
+  discount   Decimal @db.Decimal(10,2)
+  maxUses    Int?
+  usedCount  Int @default(0)
+  expiresAt  DateTime?
+  isActive   Boolean @default(true)
+  plans      CouponPlan[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model CouponPlan {
+  couponId String
+  planId   String
+  coupon   Coupon @relation(fields: [couponId], references: [id], onDelete: Cascade)
+  plan     Plan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  @@id([couponId, planId])
+}
+
+model Referral {
+  id         String @id @default(cuid())
+  referrerId String
+  referredId String
+  status     String @default("PENDING")
+  createdAt  DateTime @default(now())
+  referrer   Member @relation("Referrer", fields: [referrerId], references: [id])
+  referred   Member @relation("Referred", fields: [referredId], references: [id])
+  @@unique([referrerId, referredId])
+}

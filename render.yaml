@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: gold-army-backend
+    runtime: node
+    plan: free
+    rootDir: gold-army-backend
+    buildCommand: npm install && npx prisma generate && npm run build
+    startCommand: npm start
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: API_URL
+        sync: false
+      - key: CORS_ORIGIN
+        value: "*"
+      - key: GYM_QR_SECRET
+        value: "GOLD_ARMY_PRODUCTION_GYM_QR_2026"
+      - key: RAZORPAY_KEY_ID
+        sync: false
+      - key: RAZORPAY_KEY_SECRET
+        sync: false
+      - key: RAZORPAY_WEBHOOK_SECRET
+        sync: false

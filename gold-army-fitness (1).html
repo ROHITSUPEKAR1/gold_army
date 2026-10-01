@@ -1,0 +1,1937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gold Army Fitness Club — App Design</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Manrope:wght@700;800&display=swap" rel="stylesheet">
+<style>
+
+:root{
+  --black-deep:#080808;
+  --black-pure:#000000;
+  --graphite:#151515;
+  --surface:#1C1C1C;
+  --surface-2:#242424;
+  --line:#2b2b2b;
+  --red:#E50914;
+  --red-bright:#FF1E2D;
+  --crimson:#8B0000;
+  --red-muted:#5E1116;
+  --gold:#D4AF37;
+  --gold-soft:#E6C76A;
+  --platinum:#D9D9D9;
+  --white:#FFFFFF;
+  --text-2:#D0D0D0;
+  --muted:#8A8A8A;
+  --green:#3FB27F;
+  --amber:#E0A62B;
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;}
+body{
+  background:
+    radial-gradient(1100px 500px at 15% -10%, rgba(229,9,20,0.10), transparent 55%),
+    radial-gradient(900px 500px at 100% 0%, rgba(212,175,55,0.06), transparent 55%),
+    var(--black-pure);
+  color:var(--white);
+  font-family:'Plus Jakarta Sans', sans-serif;
+  min-height:100vh;
+}
+.stage{max-width:1180px; margin:0 auto; padding:28px 20px 70px;}
+
+/* ---------- top brand bar ---------- */
+.brandbar{display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:22px; flex-wrap:wrap;}
+.brand{display:flex; align-items:center; gap:10px;}
+.brand-mark{width:38px; height:38px; border-radius:9px; background:linear-gradient(155deg,#141414,#000); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+.brand-name{line-height:1.05;}
+.brand-name b{display:block; font-family:'Manrope',sans-serif; font-weight:800; font-size:14.5px; letter-spacing:.4px; color:var(--white);}
+.brand-name span{display:block; font-size:9.5px; letter-spacing:2px; color:var(--gold-soft); font-weight:600; margin-top:2px;}
+
+.mode-switch{display:flex; background:var(--graphite); border:1px solid var(--line); border-radius:999px; padding:4px; gap:2px;}
+.mode-switch button{
+  border:none; background:transparent; color:var(--muted); font-family:inherit; font-weight:700; font-size:12.5px;
+  padding:9px 18px; border-radius:999px; cursor:pointer; transition:.18s ease;
+}
+.mode-switch button.active{background:var(--red); color:#fff; box-shadow:0 4px 14px rgba(229,9,20,.35);}
+
+/* ---------- screen chip tabs ---------- */
+.tabs{display:flex; gap:8px; overflow-x:auto; padding:2px 2px 16px; margin-bottom:6px; scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab-chip{
+  flex:0 0 auto; background:var(--graphite); border:1px solid var(--line); color:var(--text-2);
+  font-family:inherit; font-weight:600; font-size:12.5px; padding:9px 15px; border-radius:10px; cursor:pointer; white-space:nowrap;
+  transition:.15s ease;
+}
+.tab-chip.active{background:var(--surface-2); border-color:var(--red); color:#fff;}
+.tab-chip .n{color:var(--gold-soft); margin-right:6px; font-size:11px;}
+
+/* ---------- layout: phone + side note ---------- */
+.layout{display:flex; gap:28px; align-items:flex-start; justify-content:center; flex-wrap:wrap;}
+.phone-col{display:flex; flex-direction:column; align-items:center; gap:14px;}
+.phone{
+  width:375px; height:812px; background:var(--black-pure); border-radius:46px; padding:12px;
+  border:1px solid #2a2a2a; box-shadow:0 40px 90px rgba(0,0,0,.65), 0 0 0 1px rgba(255,255,255,.02) inset;
+  position:relative; flex-shrink:0;
+}
+.phone-inner{width:100%; height:100%; background:var(--black-deep); border-radius:36px; overflow:hidden; position:relative; display:flex; flex-direction:column;}
+.notch{position:absolute; top:12px; left:50%; transform:translateX(-50%); width:120px; height:22px; background:#000; border-radius:14px; z-index:30;}
+.statusrow{display:flex; justify-content:space-between; align-items:center; padding:16px 22px 6px; font-size:12px; font-weight:700; color:#fff; flex-shrink:0;}
+.screen-scroll{flex:1; overflow-y:auto; scrollbar-width:none; padding-bottom:8px;}
+.screen-scroll::-webkit-scrollbar{display:none;}
+.screen-caption{color:var(--muted); font-size:12.5px; text-align:center; max-width:340px;}
+.screen-caption b{color:var(--text-2);}
+
+/* ---------- generic building blocks ---------- */
+.px{padding-left:20px; padding-right:20px;}
+.appbar{display:flex; align-items:center; justify-content:space-between; padding:6px 20px 14px;}
+.appbar h1{font-size:18px; margin:0; font-weight:800; font-family:'Manrope',sans-serif;}
+.iconbtn{width:34px; height:34px; border-radius:10px; background:var(--surface); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; color:var(--text-2);}
+.card{background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:16px;}
+.card + .card{margin-top:12px;}
+.section-title{font-size:11px; letter-spacing:1.2px; color:var(--muted); font-weight:700; text-transform:uppercase; margin:20px 20px 10px;}
+.row{display:flex; align-items:center; justify-content:space-between;}
+.muted{color:var(--muted);}
+.t2{color:var(--text-2);}
+.gold-text{color:var(--gold-soft);}
+.big-num{font-family:'Manrope',sans-serif; font-weight:800; letter-spacing:-.5px;}
+
+.btn{display:flex; align-items:center; justify-content:center; gap:8px; border:none; border-radius:12px; font-family:inherit; font-weight:700; font-size:13.5px; cursor:pointer; padding:13px 18px; width:100%;}
+.btn-primary{background:linear-gradient(180deg,var(--red-bright),var(--red)); color:#fff; box-shadow:0 8px 20px rgba(229,9,20,.28);}
+.btn-gold{background:linear-gradient(180deg,var(--gold-soft),var(--gold)); color:#1a1300;}
+.btn-outline{background:transparent; border:1px solid var(--line); color:var(--text-2);}
+.btn-ghost{background:var(--surface-2); color:var(--text-2);}
+.btn-sm{padding:9px 14px; font-size:12px; width:auto;}
+
+.badge{display:inline-flex; align-items:center; gap:5px; font-size:10.5px; font-weight:800; letter-spacing:.3px; padding:5px 9px; border-radius:7px;}
+.badge-active{background:rgba(63,178,127,.14); color:#5fd39e;}
+.badge-expiring{background:rgba(224,166,43,.14); color:var(--amber);}
+.badge-expired{background:rgba(229,9,20,.14); color:var(--red-bright);}
+.badge-frozen{background:rgba(217,217,217,.1); color:var(--platinum);}
+.badge-pending{background:rgba(229,9,20,.08); color:#ff8a90;}
+.badge-vip{background:linear-gradient(90deg,rgba(212,175,55,.22),rgba(212,175,55,.08)); color:var(--gold-soft); border:1px solid rgba(212,175,55,.3);}
+
+.progress{height:7px; background:var(--surface-2); border-radius:99px; overflow:hidden;}
+.progress > div{height:100%; border-radius:99px;}
+.progress.red > div{background:linear-gradient(90deg,var(--crimson),var(--red-bright));}
+.progress.gold > div{background:linear-gradient(90deg,var(--gold),var(--gold-soft));}
+.progress.green > div{background:var(--green);}
+
+.avatar{border-radius:50%; background:var(--surface-2); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; font-weight:700; color:var(--text-2); flex-shrink:0; overflow:hidden;}
+
+.stat-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:0 20px;}
+.stat-card{background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:14px;}
+.stat-card .label{font-size:10.5px; color:var(--muted); font-weight:700; letter-spacing:.4px; text-transform:uppercase;}
+.stat-card .val{font-family:'Manrope',sans-serif; font-weight:800; font-size:21px; margin-top:6px;}
+.stat-card .delta{font-size:11px; margin-top:4px; font-weight:600;}
+
+/* bottom nav */
+.bottomnav{display:flex; border-top:1px solid var(--line); background:rgba(8,8,8,.92); backdrop-filter:blur(6px); padding:10px 6px 14px; flex-shrink:0;}
+.navitem{flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; color:var(--muted); font-size:10px; font-weight:700; position:relative;}
+.navitem.active{color:#fff;}
+.navitem.active svg{color:var(--red-bright);}
+.navitem .qrdot{position:absolute; top:-8px; width:30px; height:30px; border-radius:50%; background:var(--red); display:flex; align-items:center; justify-content:center; box-shadow:0 6px 16px rgba(229,9,20,.4);}
+.icon{width:20px; height:20px; display:block;}
+
+/* misc components */
+.divider{height:1px; background:var(--line); margin:14px 0;}
+.chip{background:var(--surface-2); border:1px solid var(--line); border-radius:9px; padding:7px 11px; font-size:11.5px; font-weight:600; color:var(--text-2);}
+.pill-tabs{display:flex; background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:4px; margin:0 20px;}
+.pill-tabs button{flex:1; border:none; background:transparent; color:var(--muted); font-family:inherit; font-weight:700; font-size:12px; padding:9px; border-radius:9px; cursor:pointer;}
+.pill-tabs button.active{background:var(--red); color:#fff;}
+
+.hero-image{height:150px; border-radius:16px; background:
+    linear-gradient(180deg, rgba(8,8,8,0) 30%, rgba(8,8,8,.9) 100%),
+    repeating-linear-gradient(115deg, #1a1a1a 0 2px, #141414 2px 4px);
+  position:relative; overflow:hidden; display:flex; align-items:flex-end; padding:14px;}
+
+.list-row{display:flex; align-items:center; gap:12px; padding:12px 0;}
+.list-row + .list-row{border-top:1px solid var(--line);}
+
+::selection{background:var(--red); color:#fff;}
+
+
+/* ---- pure CSS driven tabs / mode switch (no JS required) ---- */
+.app-root > input { display:none; }
+label.tab-chip, label.mode-btn { user-select:none; }
+.mode-switch label{
+  border:none; background:transparent; color:var(--muted); font-family:inherit; font-weight:700; font-size:12.5px;
+  padding:9px 18px; border-radius:999px; cursor:pointer; transition:.18s ease; display:inline-block;
+}
+#mode-member:checked ~ .content-wrap .mode-switch label[for="mode-member"],
+#mode-admin:checked ~ .content-wrap .mode-switch label[for="mode-admin"]{
+  background:var(--red); color:#fff; box-shadow:0 4px 14px rgba(229,9,20,.35);
+}
+.admin-tabs, .admin-panels-wrap, .admin-captions-wrap { display:none; }
+#mode-admin:checked ~ .content-wrap .member-tabs,
+#mode-admin:checked ~ .content-wrap .member-panels-wrap,
+#mode-admin:checked ~ .content-wrap .member-captions-wrap { display:none; }
+#mode-admin:checked ~ .content-wrap .admin-tabs { display:flex; }
+#mode-admin:checked ~ .content-wrap .admin-panels-wrap,
+#mode-admin:checked ~ .content-wrap .admin-captions-wrap { display:block; }
+
+.screen-panel{ display:none; }
+.screen-caption{ display:none; }
+
+#ms-0:checked ~ .content-wrap .panel-ms-0{display:block;}
+#ms-0:checked ~ .content-wrap .caption-ms-0{display:block;}
+#ms-0:checked ~ .content-wrap label[for="ms-0"]{background:var(--surface-2); border-color:var(--red); color:#fff;}
+#ms-1:checked ~ .content-wrap .panel-ms-1{display:block;}
+#ms-1:checked ~ .content-wrap .caption-ms-1{display:block;}
+#ms-1:checked ~ .content-wrap label[for="ms-1"]{background:var(--surface-2); border-color:var(--red); color:#fff;}
+#ms-2:checked ~ .content-wrap .panel-ms-2{display:block;}
+#ms-2:checked ~ .content-wrap .caption-ms-2{display:block;}
+#ms-2:checked ~ .content-wrap label[for="ms-2"]{background:var(--surface-2); border-color:var(--red); color:#fff;}
+#ms-3:checked ~ .content-wrap .panel-ms-3{display:block;}
+#ms-3:checked ~ .content-wrap .caption-ms-3{display:block;}
+#ms-3:checked ~ .content-wrap label[for="ms-3"]{background:var(--surface-2); border-color:var(--red); color:#fff;}
+#ms-4:checked ~ .content-wrap .panel-ms-4{display:block;}
+#ms-4:checked ~ .content-wrap .caption-ms-4{display:block;}
+#ms-4:checked ~ .content-wrap label[for="ms-4"]{background:var(--surface-2); border-color:var(--red); color:#fff;}
+#ms-5:checked ~ .content-wrap .panel-ms-5{display:block;}
+#ms-5:checked ~ .content-wrap .caption-ms-5{display:block;}
+#ms-5:checked ~ .content-wrap label[for="ms-5"]{background:var(--surface-2); border-color:var(--red); color:#fff;}
+#ms-6:checked ~ .content-wrap .panel-ms-6{display:block;}
+#ms-6:checked ~ .content-wrap .caption-ms-6{display:block;}
+#ms-6:checked ~ .content-wrap label[for="ms-6"]{background:var(--surface-2); border-color:var(--red); color:#fff;}
+#ms-7:checked ~ .content-wrap .panel-ms-7{display:block;}
+#ms-7:checked ~ .content-wrap .caption-ms-7{display:block;}
+#ms-7:checked ~ .content-wrap label[for="ms-7"]{background:var(--surface-2); border-color:var(--red); color:#fff;}
+#ms-8:checked ~ .content-wrap .panel-ms-8{display:block;}
+#ms-8:checked ~ .content-wrap .caption-ms-8{display:block;}
+#ms-8:checked ~ .content-wrap label[for="ms-8"]{background:var(--surface-2); border-color:var(--red); color:#fff;}
+#ms-9:checked ~ .content-wrap .panel-ms-9{display:block;}
+#ms-9:checked ~ .content-wrap .caption-ms-9{display:block;}
+#ms-9:checked ~ .content-wrap label[for="ms-9"]{background:var(--surface-2); border-color:var(--red); color:#fff;}
+#ms-10:checked ~ .content-wrap .panel-ms-10{display:block;}
+#ms-10:checked ~ .content-wrap .caption-ms-10{display:block;}
+#ms-10:checked ~ .content-wrap label[for="ms-10"]{background:var(--surface-2); border-color:var(--red); color:#fff;}
+#ms-11:checked ~ .content-wrap .panel-ms-11{display:block;}
+#ms-11:checked ~ .content-wrap .caption-ms-11{display:block;}
+#ms-11:checked ~ .content-wrap label[for="ms-11"]{background:var(--surface-2); border-color:var(--red); color:#fff;}
+#ms-12:checked ~ .content-wrap .panel-ms-12{display:block;}
+#ms-12:checked ~ .content-wrap .caption-ms-12{display:block;}
+#ms-12:checked ~ .content-wrap label[for="ms-12"]{background:var(--surface-2); border-color:var(--red); color:#fff;}
+#ms-13:checked ~ .content-wrap .panel-ms-13{display:block;}
+#ms-13:checked ~ .content-wrap .caption-ms-13{display:block;}
+#ms-13:checked ~ .content-wrap label[for="ms-13"]{background:var(--surface-2); border-color:var(--red); color:#fff;}
+#ms-14:checked ~ .content-wrap .panel-ms-14{display:block;}
+#ms-14:checked ~ .content-wrap .caption-ms-14{display:block;}
+#ms-14:checked ~ .content-wrap label[for="ms-14"]{background:var(--surface-2); border-color:var(--red); color:#fff;}
+#ms-15:checked ~ .content-wrap .panel-ms-15{display:block;}
+#ms-15:checked ~ .content-wrap .caption-ms-15{display:block;}
+#ms-15:checked ~ .content-wrap label[for="ms-15"]{background:var(--surface-2); border-color:var(--red); color:#fff;}
+#as-0:checked ~ .content-wrap .panel-as-0{display:block;}
+#as-0:checked ~ .content-wrap .caption-as-0{display:block;}
+#as-0:checked ~ .content-wrap label[for="as-0"]{background:var(--surface-2); border-color:var(--red); color:#fff;}
+#as-1:checked ~ .content-wrap .panel-as-1{display:block;}
+#as-1:checked ~ .content-wrap .caption-as-1{display:block;}
+#as-1:checked ~ .content-wrap label[for="as-1"]{background:var(--surface-2); border-color:var(--red); color:#fff;}
+#as-2:checked ~ .content-wrap .panel-as-2{display:block;}
+#as-2:checked ~ .content-wrap .caption-as-2{display:block;}
+#as-2:checked ~ .content-wrap label[for="as-2"]{background:var(--surface-2); border-color:var(--red); color:#fff;}
+#as-3:checked ~ .content-wrap .panel-as-3{display:block;}
+#as-3:checked ~ .content-wrap .caption-as-3{display:block;}
+#as-3:checked ~ .content-wrap label[for="as-3"]{background:var(--surface-2); border-color:var(--red); color:#fff;}
+#as-4:checked ~ .content-wrap .panel-as-4{display:block;}
+#as-4:checked ~ .content-wrap .caption-as-4{display:block;}
+#as-4:checked ~ .content-wrap label[for="as-4"]{background:var(--surface-2); border-color:var(--red); color:#fff;}
+#as-5:checked ~ .content-wrap .panel-as-5{display:block;}
+#as-5:checked ~ .content-wrap .caption-as-5{display:block;}
+#as-5:checked ~ .content-wrap label[for="as-5"]{background:var(--surface-2); border-color:var(--red); color:#fff;}
+</style>
+</head>
+<body>
+
+<div class="app-root">
+<input type="radio" name="mode" id="mode-member" checked>
+<input type="radio" name="mode" id="mode-admin">
+<input type="radio" name="mscreen" id="ms-0" checked>
+<input type="radio" name="mscreen" id="ms-1">
+<input type="radio" name="mscreen" id="ms-2">
+<input type="radio" name="mscreen" id="ms-3">
+<input type="radio" name="mscreen" id="ms-4">
+<input type="radio" name="mscreen" id="ms-5">
+<input type="radio" name="mscreen" id="ms-6">
+<input type="radio" name="mscreen" id="ms-7">
+<input type="radio" name="mscreen" id="ms-8">
+<input type="radio" name="mscreen" id="ms-9">
+<input type="radio" name="mscreen" id="ms-10">
+<input type="radio" name="mscreen" id="ms-11">
+<input type="radio" name="mscreen" id="ms-12">
+<input type="radio" name="mscreen" id="ms-13">
+<input type="radio" name="mscreen" id="ms-14">
+<input type="radio" name="mscreen" id="ms-15">
+<input type="radio" name="ascreen" id="as-0" checked>
+<input type="radio" name="ascreen" id="as-1">
+<input type="radio" name="ascreen" id="as-2">
+<input type="radio" name="ascreen" id="as-3">
+<input type="radio" name="ascreen" id="as-4">
+<input type="radio" name="ascreen" id="as-5">
+
+<div class="content-wrap">
+  <div class="stage">
+
+    <div class="brandbar">
+      <div class="brand">
+        <div class="brand-mark">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M2 12h3M19 12h3M5 8v8M19 8v8M7 12h10" stroke="#E50914" stroke-width="2.2" stroke-linecap="round"/>
+            <path d="M12 4l1.4 2.8L16.5 8l-2.8 1.2L12 12l-1.4-2.8L7.5 8l2.8-1.2L12 4z" fill="#D4AF37"/>
+          </svg>
+        </div>
+        <div class="brand-name">
+          <b>GOLD ARMY</b>
+          <span>FITNESS CLUB</span>
+        </div>
+      </div>
+      <div class="mode-switch">
+        <label class="mode-btn" for="mode-member">Member App</label>
+        <label class="mode-btn" for="mode-admin">Admin Panel (Mobile)</label>
+      </div>
+    </div>
+
+    <div class="tabs member-tabs">
+      <label class="tab-chip" for="ms-0"><span class="n">01</span>Splash</label>
+<label class="tab-chip" for="ms-1"><span class="n">02</span>Login</label>
+<label class="tab-chip" for="ms-2"><span class="n">03</span>Onboarding</label>
+<label class="tab-chip" for="ms-3"><span class="n">04</span>Home</label>
+<label class="tab-chip" for="ms-4"><span class="n">05</span>Membership</label>
+<label class="tab-chip" for="ms-5"><span class="n">06</span>Choose Plan</label>
+<label class="tab-chip" for="ms-6"><span class="n">07</span>Payment Success</label>
+<label class="tab-chip" for="ms-7"><span class="n">08</span>Expiry Alerts</label>
+<label class="tab-chip" for="ms-8"><span class="n">09</span>Attendance</label>
+<label class="tab-chip" for="ms-9"><span class="n">10</span>QR Check-in</label>
+<label class="tab-chip" for="ms-10"><span class="n">11</span>Workout</label>
+<label class="tab-chip" for="ms-11"><span class="n">12</span>Exercise Detail</label>
+<label class="tab-chip" for="ms-12"><span class="n">13</span>Diet Plan</label>
+<label class="tab-chip" for="ms-13"><span class="n">14</span>Personal Training</label>
+<label class="tab-chip" for="ms-14"><span class="n">15</span>Notifications</label>
+<label class="tab-chip" for="ms-15"><span class="n">16</span>Profile</label>
+    </div>
+    <div class="tabs admin-tabs">
+      <label class="tab-chip" for="as-0"><span class="n">01</span>Dashboard</label>
+<label class="tab-chip" for="as-1"><span class="n">02</span>Members</label>
+<label class="tab-chip" for="as-2"><span class="n">03</span>Member 360°</label>
+<label class="tab-chip" for="as-3"><span class="n">04</span>Expiry</label>
+<label class="tab-chip" for="as-4"><span class="n">05</span>Revenue</label>
+<label class="tab-chip" for="as-5"><span class="n">06</span>Notify Composer</label>
+    </div>
+
+    <div class="layout">
+      <div class="phone-col">
+        <div class="phone">
+          <div class="phone-inner">
+            <div class="notch"></div>
+            <div class="statusrow">
+              <span>9:41</span>
+              <span style="display:flex; gap:5px; align-items:center;">
+                <svg width="15" height="11" viewBox="0 0 15 11" fill="none"><rect x="0" y="6" width="2.4" height="5" rx="0.6" fill="#fff"/><rect x="4" y="4" width="2.4" height="7" rx="0.6" fill="#fff"/><rect x="8" y="2" width="2.4" height="9" rx="0.6" fill="#fff"/><rect x="12" y="0" width="2.4" height="11" rx="0.6" fill="#fff"/></svg>
+                <svg width="16" height="11" viewBox="0 0 16 11" fill="none"><rect x="0.7" y="0.7" width="13.6" height="9.6" rx="2.3" stroke="#fff" stroke-opacity=".6"/><rect x="2" y="2" width="10" height="7" rx="1.2" fill="#fff"/></svg>
+              </span>
+            </div>
+            <div class="screen-scroll">
+              <div class="member-panels-wrap member-panels">
+              <div class="screen-panel panel-ms-0">
+  <div style="height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:22px; background:radial-gradient(600px 300px at 50% 20%, rgba(229,9,20,.12), transparent 60%);">
+    <div style="width:88px;height:88px;border-radius:22px; background:linear-gradient(155deg,#161616,#000); border:1px solid #2a2a2a; display:flex;align-items:center;justify-content:center; box-shadow:0 0 0 1px rgba(212,175,55,.15), 0 20px 50px rgba(0,0,0,.6);">
+      <svg width="42" height="42" viewBox="0 0 24 24" fill="none">
+        <path d="M2 12h3M19 12h3M5 8v8M19 8v8M7 12h10" stroke="#E50914" stroke-width="2.2" stroke-linecap="round"/>
+        <path d="M12 4l1.4 2.8L16.5 8l-2.8 1.2L12 12l-1.4-2.8L7.5 8l2.8-1.2L12 4z" fill="#D4AF37"/>
+      </svg>
+    </div>
+    <div style="text-align:center">
+      <div style="font-family:'Manrope';font-weight:800;font-size:22px;letter-spacing:1px;">GOLD ARMY</div>
+      <div style="font-size:11px;letter-spacing:4px;color:var(--gold-soft);font-weight:700;margin-top:4px;">FITNESS CLUB</div>
+    </div>
+    <div style="width:120px;height:3px;background:var(--surface-2);border-radius:99px;overflow:hidden;margin-top:8px;">
+      <div style="width:65%;height:100%;background:linear-gradient(90deg,var(--red),var(--gold));"></div>
+    </div>
+    <div style="color:var(--muted); font-size:11px; letter-spacing:1px;">DISCIPLINE IS FREEDOM</div>
+  </div></div>
+<div class="screen-panel panel-ms-1">
+  <div class="px" style="padding-top:36px;">
+    <div style="display:flex;justify-content:center;margin-bottom:22px;">
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="none">
+        <path d="M2 12h3M19 12h3M5 8v8M19 8v8M7 12h10" stroke="#E50914" stroke-width="2.2" stroke-linecap="round"/>
+        <path d="M12 4l1.4 2.8L16.5 8l-2.8 1.2L12 12l-1.4-2.8L7.5 8l2.8-1.2L12 4z" fill="#D4AF37"/>
+      </svg>
+    </div>
+    <div style="text-align:center; margin-bottom:26px;">
+      <div style="font-weight:800; font-size:20px; font-family:'Manrope';">Welcome back</div>
+      <div class="muted" style="font-size:12.5px; margin-top:5px;">Sign in to continue your training</div>
+    </div>
+    <div style="display:flex;flex-direction:column; gap:12px;">
+      <div class="card" style="padding:13px 14px;">
+        <div class="muted" style="font-size:10.5px; margin-bottom:4px;">MOBILE NUMBER</div>
+        <div style="font-size:14px; font-weight:600;">+91 98221 04&nbsp;&nbsp;•&nbsp;&nbsp;•&nbsp;&nbsp;•&nbsp;&nbsp;•</div>
+      </div>
+      <div class="card" style="padding:13px 14px;">
+        <div class="muted" style="font-size:10.5px; margin-bottom:4px;">PASSWORD</div>
+        <div style="font-size:14px; font-weight:600;">••••••••••</div>
+      </div>
+      <div class="row" style="padding:0 2px;">
+        <span class="chip" style="background:transparent;border:none;padding:0;color:var(--gold-soft);font-size:11.5px;">Login with OTP instead</span>
+        <span class="chip" style="background:transparent;border:none;padding:0;color:var(--muted);font-size:11.5px;">Forgot password?</span>
+      </div>
+      <button class="btn btn-primary" style="margin-top:8px;">Login</button>
+      <div style="text-align:center; color:var(--muted); font-size:12px; margin-top:6px;">New here? <span style="color:var(--gold-soft); font-weight:700;">Create an account</span></div>
+    </div>
+  </div></div>
+<div class="screen-panel panel-ms-2">
+  <div class="px" style="padding-top:20px;">
+    <div class="row" style="margin-bottom:16px;">
+      <div class="muted" style="font-size:11.5px; font-weight:700;">STEP 3 OF 5</div>
+      <div class="gold-text" style="font-size:11.5px; font-weight:700;">Fitness Goal</div>
+    </div>
+    <div style="display:flex; gap:5px; margin-bottom:24px;">
+      <div style="height:4px;flex:1;border-radius:99px;background:linear-gradient(90deg,var(--red),var(--gold))"></div><div style="height:4px;flex:1;border-radius:99px;background:linear-gradient(90deg,var(--red),var(--gold))"></div><div style="height:4px;flex:1;border-radius:99px;background:linear-gradient(90deg,var(--red),var(--gold))"></div><div style="height:4px;flex:1;border-radius:99px;background:var(--surface-2)"></div><div style="height:4px;flex:1;border-radius:99px;background:var(--surface-2)"></div>
+    </div>
+    <div style="font-weight:800; font-size:19px; font-family:'Manrope'; margin-bottom:6px;">What's your primary goal?</div>
+    <div class="muted" style="font-size:12.5px; margin-bottom:20px;">We'll personalize your workouts and diet around this.</div>
+    <div style="display:flex; flex-direction:column; gap:10px;">
+      
+      <div class="card" style="display:flex;align-items:center;justify-content:space-between; ">
+        <div>
+          <div style="font-weight:700; font-size:14px;">Weight Loss</div>
+          <div class="muted" style="font-size:11.5px; margin-top:2px;">Burn fat, build lean muscle</div>
+        </div>
+        <div style="width:20px;height:20px;border-radius:50%;border:2px solid var(--line); display:flex;align-items:center;justify-content:center;">
+          
+        </div>
+      </div>
+      <div class="card" style="display:flex;align-items:center;justify-content:space-between; border-color:var(--red);background:linear-gradient(180deg,rgba(229,9,20,.09),var(--surface));">
+        <div>
+          <div style="font-weight:700; font-size:14px;">Muscle Gain</div>
+          <div class="muted" style="font-size:11.5px; margin-top:2px;">Hypertrophy focused training</div>
+        </div>
+        <div style="width:20px;height:20px;border-radius:50%;border:2px solid var(--red-bright); display:flex;align-items:center;justify-content:center;">
+          <div style="width:10px;height:10px;border-radius:50%;background:var(--red-bright)"></div>
+        </div>
+      </div>
+      <div class="card" style="display:flex;align-items:center;justify-content:space-between; ">
+        <div>
+          <div style="font-weight:700; font-size:14px;">Strength</div>
+          <div class="muted" style="font-size:11.5px; margin-top:2px;">Progressive overload plans</div>
+        </div>
+        <div style="width:20px;height:20px;border-radius:50%;border:2px solid var(--line); display:flex;align-items:center;justify-content:center;">
+          
+        </div>
+      </div>
+      <div class="card" style="display:flex;align-items:center;justify-content:space-between; ">
+        <div>
+          <div style="font-weight:700; font-size:14px;">General Fitness</div>
+          <div class="muted" style="font-size:11.5px; margin-top:2px;">Stay active and consistent</div>
+        </div>
+        <div style="width:20px;height:20px;border-radius:50%;border:2px solid var(--line); display:flex;align-items:center;justify-content:center;">
+          
+        </div>
+      </div>
+    </div>
+    <button class="btn btn-primary" style="margin-top:26px;">Continue</button>
+  </div></div>
+<div class="screen-panel panel-ms-3">
+  <div class="px" style="padding-top:16px; display:flex; align-items:center; justify-content:space-between;">
+    <div style="display:flex; align-items:center; gap:11px;">
+      <div class="avatar" style="width:42px;height:42px;font-size:15.12px">RD</div>
+      <div>
+        <div class="muted" style="font-size:11.5px;">Good evening</div>
+        <div style="font-weight:800; font-size:15px;">Rohan Deshmukh</div>
+      </div>
+    </div>
+    <div class="iconbtn" style="position:relative"><svg class="icon " width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M10 3.2a3.9 3.9 0 0 0-3.9 3.9v2.3c0 .9-.4 1.8-1 2.5l-.8.9h11.4l-.8-.9a3.6 3.6 0 0 1-1-2.5V7.1A3.9 3.9 0 0 0 10 3.2z" stroke-width="1.6"/><path d="M8.3 15.6a1.8 1.8 0 0 0 3.4 0" stroke-width="1.6"/></svg><span style="position:absolute;top:6px;right:7px;width:7px;height:7px;border-radius:50%;background:var(--red-bright)"></span></div>
+  </div>
+
+  <div class="px" style="margin-top:16px;">
+    <div class="card" style="background:linear-gradient(160deg,#1c1408,var(--surface) 55%); border-color:rgba(212,175,55,.35); position:relative; overflow:hidden;">
+      <div style="position:absolute; top:-30px; right:-30px; width:120px; height:120px; border-radius:50%; background:radial-gradient(circle, rgba(212,175,55,.18), transparent 70%);"></div>
+      <div class="row">
+        <span class="badge badge-vip"><svg class="icon " width="11" height="11" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M6 3.5h8v3.8a4 4 0 0 1-8 0V3.5z" stroke-width="1.6"/><path d="M6 4.8H3.8a1.6 1.6 0 0 0 0 3.2H6M14 4.8h2.2a1.6 1.6 0 0 1 0 3.2H14M10 11.3v2.6M7.2 17h5.6M8.5 13.9h3l.5 3.1h-4z" stroke-width="1.5"/></svg> GOLD MEMBERSHIP</span>
+        <span class="badge badge-expiring">EXPIRING SOON</span>
+      </div>
+      <div style="margin-top:14px; display:flex; align-items:baseline; gap:7px;">
+        <span class="big-num" style="font-size:34px;">23</span>
+        <span class="t2" style="font-size:13px; font-weight:700;">DAYS REMAINING</span>
+      </div>
+      <div class="progress gold" style="margin-top:12px;"><div style="width:74%"></div></div>
+      <div class="row" style="margin-top:10px;">
+        <span class="muted" style="font-size:11px;">Valid until 04 Oct 2026</span>
+        <span class="muted" style="font-size:11px;">Gym + PT</span>
+      </div>
+      <button class="btn btn-gold" style="margin-top:14px;">Renew Membership</button>
+    </div>
+  </div>
+
+  <div class="stat-grid" style="margin-top:14px;">
+    <div class="stat-card">
+    <div class="label">Today’s Workout</div>
+    <div class="val" style="">Push Day</div>
+    <div class="delta" style="color:#5fd39e">6 exercises • 48 min</div>
+  </div>
+    <div class="stat-card">
+    <div class="label">Workout Streak</div>
+    <div class="val" style="">12 <span style="font-size:12px;color:var(--muted)">days</span></div>
+    <div class="delta" style="color:#5fd39e">Best: 21 days</div>
+  </div>
+    <div class="stat-card">
+    <div class="label">Calorie Target</div>
+    <div class="val" style="">2,240 <span style="font-size:11px;color:var(--muted)">kcal</span></div>
+    
+  </div>
+    <div class="stat-card">
+    <div class="label">Next PT Session</div>
+    <div class="val" style="color:var(--gold-soft)">Today 6:30 PM</div>
+    
+  </div>
+  </div>
+
+  <div class="px" style="margin-top:16px;">
+    <div class="card">
+      <div class="row">
+        <div style="font-weight:700; font-size:13.5px;">This week's attendance</div>
+        <span class="muted" style="font-size:11px;">5 / 6 days</span>
+      </div>
+      <div style="display:flex; gap:7px; margin-top:12px;">
+        
+        <div style="flex:1; text-align:center;">
+          <div style="height:34px;border-radius:9px; background:linear-gradient(180deg,var(--red-bright),var(--red)); display:flex; align-items:center; justify-content:center;">
+            <svg class="icon " width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M4 10.5l4 4 8-9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="muted" style="font-size:9.5px; margin-top:5px;">M</div>
+        </div>
+        <div style="flex:1; text-align:center;">
+          <div style="height:34px;border-radius:9px; background:linear-gradient(180deg,var(--red-bright),var(--red)); display:flex; align-items:center; justify-content:center;">
+            <svg class="icon " width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M4 10.5l4 4 8-9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="muted" style="font-size:9.5px; margin-top:5px;">T</div>
+        </div>
+        <div style="flex:1; text-align:center;">
+          <div style="height:34px;border-radius:9px; background:linear-gradient(180deg,var(--red-bright),var(--red)); display:flex; align-items:center; justify-content:center;">
+            <svg class="icon " width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M4 10.5l4 4 8-9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="muted" style="font-size:9.5px; margin-top:5px;">W</div>
+        </div>
+        <div style="flex:1; text-align:center;">
+          <div style="height:34px;border-radius:9px; background:linear-gradient(180deg,var(--red-bright),var(--red)); display:flex; align-items:center; justify-content:center;">
+            <svg class="icon " width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M4 10.5l4 4 8-9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="muted" style="font-size:9.5px; margin-top:5px;">T</div>
+        </div>
+        <div style="flex:1; text-align:center;">
+          <div style="height:34px;border-radius:9px; background:linear-gradient(180deg,var(--red-bright),var(--red)); display:flex; align-items:center; justify-content:center;">
+            <svg class="icon " width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M4 10.5l4 4 8-9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="muted" style="font-size:9.5px; margin-top:5px;">F</div>
+        </div>
+        <div style="flex:1; text-align:center;">
+          <div style="height:34px;border-radius:9px; background:var(--surface-2); display:flex; align-items:center; justify-content:center;">
+            
+          </div>
+          <div class="muted" style="font-size:9.5px; margin-top:5px;">S</div>
+        </div>
+        <div style="flex:1; text-align:center;">
+          <div style="height:34px;border-radius:9px; background:var(--surface-2); display:flex; align-items:center; justify-content:center;">
+            
+          </div>
+          <div class="muted" style="font-size:9.5px; margin-top:5px;">S</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="px" style="margin-top:14px; margin-bottom:6px;">
+    <div class="card" style="display:flex; align-items:center; gap:12px; background:var(--surface-2);">
+      <svg class="icon " width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M10 3.2a3.9 3.9 0 0 0-3.9 3.9v2.3c0 .9-.4 1.8-1 2.5l-.8.9h11.4l-.8-.9a3.6 3.6 0 0 1-1-2.5V7.1A3.9 3.9 0 0 0 10 3.2z" stroke-width="1.6"/><path d="M8.3 15.6a1.8 1.8 0 0 0 3.4 0" stroke-width="1.6"/></svg>
+      <div style="flex:1;">
+        <div style="font-size:12.5px; font-weight:700;">New diet plan assigned</div>
+        <div class="muted" style="font-size:11px;">Trainer Aditya updated your meal plan</div>
+      </div>
+      <svg class="icon " width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M7.5 4.5l6 5.5-6 5.5" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+  </div>
+  <div class="bottomnav">
+    <div class="navitem active">
+      <svg class="icon " width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M3 10.2L10 4l7 6.2M5 9v7.2a1 1 0 0 0 1 1h3v-5h2v5h3a1 1 0 0 0 1-1V9" stroke-width="1.7"/></svg>
+      <span>Home</span>
+    </div>
+    <div class="navitem ">
+      <svg class="icon " width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="6" height="6" rx="1.3" stroke-width="1.7"/><rect x="11" y="3" width="6" height="6" rx="1.3" stroke-width="1.7"/><rect x="3" y="11" width="6" height="6" rx="1.3" stroke-width="1.7"/><rect x="11" y="11" width="6" height="6" rx="1.3" stroke-width="1.7"/></svg>
+      <span>Services</span>
+    </div>
+    <div class="navitem ">
+      <svg class="icon " width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M2.2 10h2.2M15.6 10h2.2M4.4 6.8v6.4M15.6 6.8v6.4M6.6 10h6.8" stroke-width="1.9" stroke-linecap="round"/></svg>
+      <span>Workout</span>
+    </div>
+    <div class="navitem ">
+      <svg class="icon " width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><rect x="2.5" y="2.5" width="5.5" height="5.5" rx=".8" stroke-width="1.6"/><rect x="12" y="2.5" width="5.5" height="5.5" rx=".8" stroke-width="1.6"/><rect x="2.5" y="12" width="5.5" height="5.5" rx=".8" stroke-width="1.6"/><path d="M12 12.3h2.4v2.4H12zM16.1 12.3h1.4M12 16.4h1.4M15 15.4h2.6v2.6H15" stroke-width="1.5"/></svg>
+      <span>Attend</span>
+    </div>
+    <div class="navitem ">
+      <svg class="icon " width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="6.6" r="3.1" stroke-width="1.7"/><path d="M3.6 17c0-3.5 2.9-6.2 6.4-6.2s6.4 2.7 6.4 6.2" stroke-width="1.7"/></svg>
+      <span>Profile</span>
+    </div></div></div>
+<div class="screen-panel panel-ms-4">
+  <div class="appbar">
+    <div style="width:34px"></div>
+    <h1>Membership</h1>
+    <div style="width:34px"></div>
+  </div>
+  <div class="pill-tabs">
+    <button class="active">My Membership</button>
+    <button>Choose New Plan</button>
+  </div>
+  <div class="px" style="margin-top:16px;">
+    <div class="card" style="background:linear-gradient(160deg,#1c1408,var(--surface) 55%); border-color:rgba(212,175,55,.35);">
+      <span class="badge badge-vip"><svg class="icon " width="11" height="11" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M6 3.5h8v3.8a4 4 0 0 1-8 0V3.5z" stroke-width="1.6"/><path d="M6 4.8H3.8a1.6 1.6 0 0 0 0 3.2H6M14 4.8h2.2a1.6 1.6 0 0 1 0 3.2H14M10 11.3v2.6M7.2 17h5.6M8.5 13.9h3l.5 3.1h-4z" stroke-width="1.5"/></svg> GOLD MEMBERSHIP</span>
+      <div style="font-family:'Manrope'; font-weight:800; font-size:20px; margin-top:10px;">Gym + Personal Training</div>
+      <div class="row" style="margin-top:12px;">
+        <div><div class="muted" style="font-size:10.5px;">STARTED</div><div style="font-size:12.5px; font-weight:700; margin-top:3px;">12 Jul 2026</div></div>
+        <div><div class="muted" style="font-size:10.5px;">EXPIRES</div><div style="font-size:12.5px; font-weight:700; margin-top:3px;">04 Oct 2026</div></div>
+        <div><div class="muted" style="font-size:10.5px;">PRICE</div><div style="font-size:12.5px; font-weight:700; margin-top:3px;">₹8,499</div></div>
+      </div>
+      <div class="progress gold" style="margin-top:14px;"><div style="width:74%"></div></div>
+      <div class="muted" style="font-size:11px; margin-top:8px;">23 days remaining</div>
+      <button class="btn btn-gold" style="margin-top:14px;">Renew Now</button>
+    </div>
+  </div>
+  <div class="section-title">Membership History</div>
+  <div class="px" style="display:flex; flex-direction:column; gap:10px;">
+    
+    <div class="card" style="padding:13px 14px;">
+      <div class="row">
+        <div style="font-size:13px; font-weight:700;">Gym + PT · Quarterly</div>
+        <span class="badge badge-active">ACTIVE</span>
+      </div>
+      <div class="row" style="margin-top:8px;">
+        <span class="muted" style="font-size:11.5px;">12 Jul – 04 Oct 2026</span>
+        <span style="font-size:12.5px; font-weight:700;">₹8,499</span>
+      </div>
+    </div>
+    <div class="card" style="padding:13px 14px;">
+      <div class="row">
+        <div style="font-size:13px; font-weight:700;">General Gym · Monthly</div>
+        <span class="badge badge-expired">EXPIRED</span>
+      </div>
+      <div class="row" style="margin-top:8px;">
+        <span class="muted" style="font-size:11.5px;">12 Jun – 11 Jul 2026</span>
+        <span style="font-size:12.5px; font-weight:700;">₹1,999</span>
+      </div>
+    </div>
+    <div class="card" style="padding:13px 14px;">
+      <div class="row">
+        <div style="font-size:13px; font-weight:700;">General Gym · Monthly</div>
+        <span class="badge badge-expired">EXPIRED</span>
+      </div>
+      <div class="row" style="margin-top:8px;">
+        <span class="muted" style="font-size:11.5px;">12 May – 11 Jun 2026</span>
+        <span style="font-size:12.5px; font-weight:700;">₹1,999</span>
+      </div>
+    </div>
+  </div>
+  <div class="bottomnav">
+    <div class="navitem ">
+      <svg class="icon " width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M3 10.2L10 4l7 6.2M5 9v7.2a1 1 0 0 0 1 1h3v-5h2v5h3a1 1 0 0 0 1-1V9" stroke-width="1.7"/></svg>
+      <span>Home</span>
+    </div>
+    <div class="navitem active">
+      <svg class="icon " width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="6" height="6" rx="1.3" stroke-width="1.7"/><rect x="11" y="3" width="6" height="6" rx="1.3" stroke-width="1.7"/><rect x="3" y="11" width="6" height="6" rx="1.3" stroke-width="1.7"/><rect x="11" y="11" width="6" height="6" rx="1.3" stroke-width="1.7"/></svg>
+      <span>Services</span>
+    </div>
+    <div class="navitem ">
+      <svg class="icon " width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M2.2 10h2.2M15.6 10h2.2M4.4 6.8v6.4M15.6 6.8v6.4M6.6 10h6.8" stroke-width="1.9" stroke-linecap="round"/></svg>
+      <span>Workout</span>
+    </div>
+    <div class="navitem ">
+      <svg class="icon " width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><rect x="2.5" y="2.5" width="5.5" height="5.5" rx=".8" stroke-width="1.6"/><rect x="12" y="2.5" width="5.5" height="5.5" rx=".8" stroke-width="1.6"/><rect x="2.5" y="12" width="5.5" height="5.5" rx=".8" stroke-width="1.6"/><path d="M12 12.3h2.4v2.4H12zM16.1 12.3h1.4M12 16.4h1.4M15 15.4h2.6v2.6H15" stroke-width="1.5"/></svg>
+      <span>Attend</span>
+    </div>
+    <div class="navitem ">
+      <svg class="icon " width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="6.6" r="3.1" stroke-width="1.7"/><path d="M3.6 17c0-3.5 2.9-6.2 6.4-6.2s6.4 2.7 6.4 6.2" stroke-width="1.7"/></svg>
+      <span>Profile</span>
+    </div></div></div>
+<div class="screen-panel panel-ms-5">
+  <div class="appbar">
+    <div class="iconbtn"><svg class="icon " width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M7.5 4.5l6 5.5-6 5.5" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <h1>Choose Membership</h1>
+    <div style="width:34px"></div>
+  </div>
+  <div class="px muted" style="font-size:12px; margin-bottom:14px;">Select a service and duration built for your goal</div>
+  <div class="px" style="display:flex; gap:8px; overflow-x:auto; padding-bottom:4px;">
+    <span class="chip" style="background:var(--red);color:#fff;border-color:var(--red)">All</span><span class="chip" style="">Gym</span><span class="chip" style="">Cardio</span><span class="chip" style="">PT</span><span class="chip" style="">Gym+PT</span>
+  </div>
+  <div class="px" style="display:flex; flex-direction:column; gap:12px; margin-top:14px;">
+    <div class="card" style="border-color:var(--red); position:relative;">
+      <span style="position:absolute; top:-10px; right:16px; background:var(--red); color:#fff; font-size:10px; font-weight:800; padding:4px 10px; border-radius:99px;">MOST POPULAR</span>
+      <div style="font-weight:800; font-size:15px;">Gym + Cardio</div>
+      <div class="muted" style="font-size:11.5px; margin-top:2px;">Quarterly · 3 months</div>
+      <div style="display:flex; align-items:baseline; gap:6px; margin-top:12px;">
+        <span class="big-num" style="font-size:24px;">₹5,499</span>
+        <span class="muted" style="font-size:11.5px; text-decoration:line-through;">₹6,999</span>
+      </div>
+      <div class="muted" style="font-size:11px; margin-top:2px;">Save ₹1,500 · ₹1,833/month</div>
+      <div class="divider"></div>
+      <div style="display:flex; flex-direction:column; gap:7px;">
+        <div style="display:flex; align-items:center; gap:8px; font-size:12.5px;"><svg class="icon gold-text" width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M4 10.5l4 4 8-9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Full gym access</span></div><div style="display:flex; align-items:center; gap:8px; font-size:12.5px;"><svg class="icon gold-text" width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M4 10.5l4 4 8-9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Cardio zone access</span></div><div style="display:flex; align-items:center; gap:8px; font-size:12.5px;"><svg class="icon gold-text" width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M4 10.5l4 4 8-9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Diet plan included</span></div><div style="display:flex; align-items:center; gap:8px; font-size:12.5px;"><svg class="icon gold-text" width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M4 10.5l4 4 8-9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Free 1 PT session</span></div>
+      </div>
+      <button class="btn btn-primary" style="margin-top:14px;">Select Plan</button>
+    </div>
+    <div class="card" style="background:linear-gradient(160deg,#1c1408,var(--surface) 55%); border-color:rgba(212,175,55,.35);">
+      <span class="badge badge-vip"><svg class="icon " width="11" height="11" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M6 3.5h8v3.8a4 4 0 0 1-8 0V3.5z" stroke-width="1.6"/><path d="M6 4.8H3.8a1.6 1.6 0 0 0 0 3.2H6M14 4.8h2.2a1.6 1.6 0 0 1 0 3.2H14M10 11.3v2.6M7.2 17h5.6M8.5 13.9h3l.5 3.1h-4z" stroke-width="1.5"/></svg> PREMIUM</span>
+      <div style="font-weight:800; font-size:15px; margin-top:8px;">Gym + Cardio + PT</div>
+      <div class="muted" style="font-size:11.5px; margin-top:2px;">Half-Yearly · 6 months</div>
+      <div style="display:flex; align-items:baseline; gap:6px; margin-top:12px;">
+        <span class="big-num" style="font-size:24px;">₹16,999</span>
+      </div>
+      <div class="muted" style="font-size:11px; margin-top:2px;">24 PT sessions included</div>
+      <button class="btn btn-gold" style="margin-top:14px;">Select Plan</button>
+    </div>
+    <div class="card">
+      <div style="font-weight:800; font-size:15px;">General Gym</div>
+      <div class="muted" style="font-size:11.5px; margin-top:2px;">Monthly</div>
+      <div style="display:flex; align-items:baseline; gap:6px; margin-top:12px;">
+        <span class="big-num" style="font-size:24px;">₹1,999</span>
+      </div>
+      <button class="btn btn-outline" style="margin-top:14px;">Select Plan</button>
+    </div>
+  </div>
+  <div class="bottomnav">
+    <div class="navitem ">
+      <svg class="icon " width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M3 10.2L10 4l7 6.2M5 9v7.2a1 1 0 0 0 1 1h3v-5h2v5h3a1 1 0 0 0 1-1V9" stroke-width="1.7"/></svg>
+      <span>Home</span>
+    </div>
+    <div class="navitem active">
+      <svg class="icon " width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="6" height="6" rx="1.3" stroke-width="1.7"/><rect x="11" y="3" width="6" height="6" rx="1.3" stroke-width="1.7"/><rect x="3" y="11" width="6" height="6" rx="1.3" stroke-width="1.7"/><rect x="11" y="11" width="6" height="6" rx="1.3" stroke-width="1.7"/></svg>
+      <span>Services</span>
+    </div>
+    <div class="navitem ">
+      <svg class="icon " width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M2.2 10h2.2M15.6 10h2.2M4.4 6.8v6.4M15.6 6.8v6.4M6.6 10h6.8" stroke-width="1.9" stroke-linecap="round"/></svg>
+      <span>Workout</span>
+    </div>
+    <div class="navitem ">
+      <svg class="icon " width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><rect x="2.5" y="2.5" width="5.5" height="5.5" rx=".8" stroke-width="1.6"/><rect x="12" y="2.5" width="5.5" height="5.5" rx=".8" stroke-width="1.6"/><rect x="2.5" y="12" width="5.5" height="5.5" rx=".8" stroke-width="1.6"/><path d="M12 12.3h2.4v2.4H12zM16.1 12.3h1.4M12 16.4h1.4M15 15.4h2.6v2.6H15" stroke-width="1.5"/></svg>
+      <span>Attend</span>
+    </div>
+    <div class="navitem ">
+      <svg class="icon " width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="6.6" r="3.1" stroke-width="1.7"/><path d="M3.6 17c0-3.5 2.9-6.2 6.4-6.2s6.4 2.7 6.4 6.2" stroke-width="1.7"/></svg>
+      <span>Profile</span>
+    </div></div></div>
+<div class="screen-panel panel-ms-6">
+  <div style="height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; padding:0 30px; text-align:center;">
+    <div style="width:76px; height:76px; border-radius:50%; background:radial-gradient(circle, rgba(63,178,127,.2), transparent 70%); display:flex; align-items:center; justify-content:center; border:1px solid rgba(63,178,127,.4);">
+      <div style="width:52px;height:52px;border-radius:50%; background:var(--green); display:flex; align-items:center; justify-content:center;">
+        <svg class="icon " width="24" height="24" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M4 10.5l4 4 8-9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </div>
+    <div style="font-family:'Manrope'; font-weight:800; font-size:19px; margin-top:4px;">Payment Successful</div>
+    <div class="muted" style="font-size:12.5px;">Your membership has been activated</div>
+
+    <div class="card" style="width:100%; margin-top:10px; background:linear-gradient(160deg,#1c1408,var(--surface) 55%); border-color:rgba(212,175,55,.35); text-align:left;">
+      <span class="badge badge-vip"><svg class="icon " width="11" height="11" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M6 3.5h8v3.8a4 4 0 0 1-8 0V3.5z" stroke-width="1.6"/><path d="M6 4.8H3.8a1.6 1.6 0 0 0 0 3.2H6M14 4.8h2.2a1.6 1.6 0 0 1 0 3.2H14M10 11.3v2.6M7.2 17h5.6M8.5 13.9h3l.5 3.1h-4z" stroke-width="1.5"/></svg> GOLD MEMBERSHIP</span>
+      <div class="row" style="margin-top:14px;">
+        <span class="muted" style="font-size:11.5px;">Amount Paid</span>
+        <span style="font-weight:800; font-size:16px;">₹2,999</span>
+      </div>
+      <div class="divider"></div>
+      <div class="row" style="margin-top:0;">
+        <span class="muted" style="font-size:11.5px;">Valid From</span>
+        <span style="font-size:12.5px; font-weight:700;">12 Sep 2026</span>
+      </div>
+      <div class="row" style="margin-top:8px;">
+        <span class="muted" style="font-size:11.5px;">Valid Until</span>
+        <span style="font-size:12.5px; font-weight:700;">12 Oct 2026</span>
+      </div>
+      <div class="row" style="margin-top:8px;">
+        <span class="muted" style="font-size:11.5px;">Payment ID</span>
+        <span style="font-size:12.5px; font-weight:700;">GA2609112201</span>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" style="margin-top:6px;"><svg class="icon " width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M10 3v10M6 9.5l4 4 4-4M4 16.5h12" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg> View Receipt</button>
+    <button class="btn btn-ghost">Back to Home</button>
+  </div></div>
+<div class="screen-panel panel-ms-7">
+  <div class="appbar">
+    <div style="width:34px"></div>
+    <h1>Membership Status</h1>
+    <div style="width:34px"></div>
+  </div>
+  <div class="px" style="display:flex; flex-direction:column; gap:14px;">
+    <div class="card" style="border-color:rgba(224,166,43,.4); background:linear-gradient(160deg,rgba(224,166,43,.08),var(--surface));">
+      <span class="badge badge-expiring">EXPIRING SOON</span>
+      <div style="font-weight:700; font-size:14px; margin-top:10px;">Only 3 days remaining on your membership</div>
+      <div class="muted" style="font-size:12px; margin-top:4px;">Renew now to avoid losing access to the gym floor and your PT sessions.</div>
+      <button class="btn btn-gold" style="margin-top:12px;">Renew Membership</button>
+    </div>
+
+    <div class="section-title" style="margin:6px 0 0;">Expiry timeline preview</div>
+
+    
+    <div class="list-row" style="align-items:flex-start;">
+      <div style="width:8px;height:8px;border-radius:50%;background:var(--muted); margin-top:6px; flex-shrink:0;"></div>
+      <div>
+        <div style="font-size:12.5px; font-weight:700;">7 days before</div>
+        <div class="muted" style="font-size:11.5px; margin-top:2px;">Your gym membership expires in 7 days. Renew now to continue your training.</div>
+      </div>
+    </div>
+    <div class="list-row" style="align-items:flex-start;">
+      <div style="width:8px;height:8px;border-radius:50%;background:var(--amber); margin-top:6px; flex-shrink:0;"></div>
+      <div>
+        <div style="font-size:12.5px; font-weight:700;">3 days before</div>
+        <div class="muted" style="font-size:11.5px; margin-top:2px;">Only 3 days remaining on your membership.</div>
+      </div>
+    </div>
+    <div class="list-row" style="align-items:flex-start;">
+      <div style="width:8px;height:8px;border-radius:50%;background:var(--red-bright); margin-top:6px; flex-shrink:0;"></div>
+      <div>
+        <div style="font-size:12.5px; font-weight:700;">1 day before</div>
+        <div class="muted" style="font-size:11.5px; margin-top:2px;">Your membership expires tomorrow.</div>
+      </div>
+    </div>
+    <div class="list-row" style="align-items:flex-start;">
+      <div style="width:8px;height:8px;border-radius:50%;background:var(--red-bright); margin-top:6px; flex-shrink:0;"></div>
+      <div>
+        <div style="font-size:12.5px; font-weight:700;">Expiry day</div>
+        <div class="muted" style="font-size:11.5px; margin-top:2px;">Your membership has expired. Renew to continue training.</div>
+      </div>
+    </div>
+
+    <div class="card" style="border-color:var(--red); text-align:center; margin-top:4px;">
+      <div style="font-weight:800; font-size:15px; color:var(--red-bright);">Membership Expired</div>
+      <div class="muted" style="font-size:12px; margin-top:5px;">Renew your membership to continue training and keep your streak alive.</div>
+      <button class="btn btn-primary" style="margin-top:12px;">Renew Now</button>
+    </div>
+  </div>
+  <div class="bottomnav">
+    <div class="navitem active">
+      <svg class="icon " width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M3 10.2L10 4l7 6.2M5 9v7.2a1 1 0 0 0 1 1h3v-5h2v5h3a1 1 0 0 0 1-1V9" stroke-width="1.7"/></svg>
+      <span>Home</span>
+    </div>
+    <div class="navitem ">
+      <svg class="icon " width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="6" height="6" rx="1.3" stroke-width="1.7"/><rect x="11" y="3" width="6" height="6" rx="1.3" stroke-width="1.7"/><rect x="3" y="11" width="6" height="6" rx="1.3" stroke-width="1.7"/><rect x="11" y="11" width="6" height="6" rx="1.3" stroke-width="1.7"/></svg>
+      <span>Services</span>
+    </div>
+    <div class="navitem ">
+      <svg class="icon " width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M2.2 10h2.2M15.6 10h2.2M4.4 6.8v6.4M15.6 6.8v6.4M6.6 10h6.8" stroke-width="1.9" stroke-linecap="round"/></svg>
+      <span>Workout</span>
+    </div>
+    <div class="navitem ">
+      <svg class="icon " width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><rect x="2.5" y="2.5" width="5.5" height="5.5" rx=".8" stroke-width="1.6"/><rect x="12" y="2.5" width="5.5" height="5.5" rx=".8" stroke-width="1.6"/><rect x="2.5" y="12" width="5.5" height="5.5" rx=".8" stroke-width="1.6"/><path d="M12 12.3h2.4v2.4H12zM16.1 12.3h1.4M12 16.4h1.4M15 15.4h2.6v2.6H15" stroke-width="1.5"/></svg>
+      <span>Attend</span>
+    </div>
+    <div class="navitem ">
+      <svg class="icon " width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="6.6" r="3.1" stroke-width="1.7"/><path d="M3.6 17c0-3.5 2.9-6.2 6.4-6.2s6.4 2.7 6.4 6.2" stroke-width="1.7"/></svg>
+      <span>Profile</span>
+    </div></div></div>
+<div class="screen-panel panel-ms-8">
+  <div class="appbar">
+    <div style="width:34px"></div>
+    <h1>Attendance</h1>
+    <div style="width:34px"></div>
+  </div>
+  <div class="px">
+    <div class="card" style="text-align:center; background:linear-gradient(160deg,rgba(229,9,20,.1),var(--surface));">
+      <svg class="icon gold-text" width="26" height="26" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M10 2.5c1 2.4-.4 3.4-1.2 4.5-1 1.4-1.4 2.6-1.4 3.7a4 4 0 0 0 8 0c0-2.3-1.6-3.4-1.6-5.3 0 1.7-.9 2.3-1.6 3.1-.5-2.6-1.6-4.4-2.2-6z" stroke-width="1.5" stroke-linejoin="round"/></svg>
+      <div class="big-num" style="font-size:26px; margin-top:6px;">12 DAY STREAK</div>
+      <div class="muted" style="font-size:12px; margin-top:4px;">You've trained 5 days this week</div>
+    </div>
+  </div>
+  <div class="stat-grid" style="margin-top:12px;">
+    <div class="stat-card">
+    <div class="label">Total Visits</div>
+    <div class="val" style="">142</div>
+    
+  </div>
+    <div class="stat-card">
+    <div class="label">Longest Streak</div>
+    <div class="val" style="">21 days</div>
+    
+  </div>
+    <div class="stat-card">
+    <div class="label">This Month</div>
+    <div class="val" style="color:#5fd39e">19 / 22</div>
+    
+  </div>
+    <div class="stat-card">
+    <div class="label">Attendance</div>
+    <div class="val" style="color:var(--gold-soft)">86%</div>
+    
+  </div>
+  </div>
+  <div class="px" style="margin-top:14px;">
+    <div class="card">
+      <div class="row"><div style="font-weight:700; font-size:13px;">September 2026</div><div style="display:flex; gap:10px;"><svg class="icon " width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M7.5 4.5l6 5.5-6 5.5" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span style="transform:rotate(180deg); display:inline-block;"><svg class="icon " width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M7.5 4.5l6 5.5-6 5.5" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div></div>
+      <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:6px; margin-top:14px;">
+        <div class="muted" style="font-size:10px; text-align:center;">S</div><div class="muted" style="font-size:10px; text-align:center;">M</div><div class="muted" style="font-size:10px; text-align:center;">T</div><div class="muted" style="font-size:10px; text-align:center;">W</div><div class="muted" style="font-size:10px; text-align:center;">T</div><div class="muted" style="font-size:10px; text-align:center;">F</div><div class="muted" style="font-size:10px; text-align:center;">S</div>
+        <div style="aspect-ratio:1; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:10.5px; font-weight:700;
+            background:var(--red);  color:#fff;">1</div><div style="aspect-ratio:1; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:10.5px; font-weight:700;
+            background:var(--red);  color:#fff;">2</div><div style="aspect-ratio:1; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:10.5px; font-weight:700;
+            background:var(--surface-2);  color:var(--muted);">3</div><div style="aspect-ratio:1; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:10.5px; font-weight:700;
+            background:var(--red);  color:#fff;">4</div><div style="aspect-ratio:1; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:10.5px; font-weight:700;
+            background:var(--red);  color:#fff;">5</div><div style="aspect-ratio:1; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:10.5px; font-weight:700;
+            background:var(--red);  color:#fff;">6</div><div style="aspect-ratio:1; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:10.5px; font-weight:700;
+            background:var(--surface-2);  color:var(--muted);">7</div><div style="aspect-ratio:1; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:10.5px; font-weight:700;
+            background:var(--red);  color:#fff;">8</div><div style="aspect-ratio:1; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:10.5px; font-weight:700;
+            background:var(--red);  color:#fff;">9</div><div style="aspect-ratio:1; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:10.5px; font-weight:700;
+            background:var(--red);  color:#fff;">10</div><div style="aspect-ratio:1; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:10.5px; font-weight:700;
+            background:var(--surface-2); border:1.5px solid var(--gold-soft); color:var(--muted);">11</div><div style="aspect-ratio:1; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:10.5px; font-weight:700;
+            background:var(--red);  color:#fff;">12</div><div style="aspect-ratio:1; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:10.5px; font-weight:700;
+            background:var(--red);  color:#fff;">13</div><div style="aspect-ratio:1; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:10.5px; font-weight:700;
+            background:var(--red);  color:#fff;">14</div><div style="aspect-ratio:1; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:10.5px; font-weight:700;
+            background:var(--surface-2);  color:var(--muted);">15</div><div style="aspect-ratio:1; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:10.5px; font-weight:700;
+            background:var(--red);  color:#fff;">16</div><div style="aspect-ratio:1; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:10.5px; font-weight:700;
+            background:var(--red);  color:#fff;">17</div><div style="aspect-ratio:1; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:10.5px; font-weight:700;
+            background:var(--red);  color:#fff;">18</div><div style="aspect-ratio:1; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:10.5px; font-weight:700;
+            background:var(--red);  color:#fff;">19</div><div style="aspect-ratio:1; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:10.5px; font-weight:700;
+            background:var(--red);  color:#fff;">20</div><div style="aspect-ratio:1; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:10.5px; font-weight:700;
+            background:var(--surface-2);  color:var(--muted);">21</div><div style="aspect-ratio:1; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:10.5px; font-weight:700;
+            background:var(--red);  color:#fff;">22</div><div style="aspect-ratio:1; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:10.5px; font-weight:700;
+            background:var(--red);  color:#fff;">23</div><div style="aspect-ratio:1; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:10.5px; font-weight:700;
+            background:var(--red);  color:#fff;">24</div><div style="aspect-ratio:1; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:10.5px; font-weight:700;
+            background:var(--red);  color:#fff;">25</div><div style="aspect-ratio:1; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:10.5px; font-weight:700;
+            background:var(--red);  color:#fff;">26</div><div style="aspect-ratio:1; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:10.5px; font-weight:700;
+            background:var(--surface-2);  color:var(--muted);">27</div><div style="aspect-ratio:1; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:10.5px; font-weight:700;
+            background:var(--red);  color:#fff;">28</div><div style="aspect-ratio:1; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:10.5px; font-weight:700;
+            background:var(--red);  color:#fff;">29</div><div style="aspect-ratio:1; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:10.5px; font-weight:700;
+            background:var(--red);  color:#fff;">30</div>
+      </div>
+    </div>
+  </div>
+  <div class="bottomnav">
+    <div class="navitem ">
+      <svg class="icon " width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M3 10.2L10 4l7 6.2M5 9v7.2a1 1 0 0 0 1 1h3v-5h2v5h3a1 1 0 0 0 1-1V9" stroke-width="1.7"/></svg>
+      <span>Home</span>
+    </div>
+    <div class="navitem ">
+      <svg class="icon " width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="6" height="6" rx="1.3" stroke-width="1.7"/><rect x="11" y="3" width="6" height="6" rx="1.3" stroke-width="1.7"/><rect x="3" y="11" width="6" height="6" rx="1.3" stroke-width="1.7"/><rect x="11" y="11" width="6" height="6" rx="1.3" stroke-width="1.7"/></svg>
+      <span>Services</span>
+    </div>
+    <div class="navitem ">
+      <svg class="icon " width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M2.2 10h2.2M15.6 10h2.2M4.4 6.8v6.4M15.6 6.8v6.4M6.6 10h6.8" stroke-width="1.9" stroke-linecap="round"/></svg>
+      <span>Workout</span>
+    </div>
+    <div class="navitem active">
+      <svg class="icon " width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><rect x="2.5" y="2.5" width="5.5" height="5.5" rx=".8" stroke-width="1.6"/><rect x="12" y="2.5" width="5.5" height="5.5" rx=".8" stroke-width="1.6"/><rect x="2.5" y="12" width="5.5" height="5.5" rx=".8" stroke-width="1.6"/><path d="M12 12.3h2.4v2.4H12zM16.1 12.3h1.4M12 16.4h1.4M15 15.4h2.6v2.6H15" stroke-width="1.5"/></svg>
+      <span>Attend</span>
+    </div>
+    <div class="navitem ">
+      <svg class="icon " width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="6.6" r="3.1" stroke-width="1.7"/><path d="M3.6 17c0-3.5 2.9-6.2 6.4-6.2s6.4 2.7 6.4 6.2" stroke-width="1.7"/></svg>
+      <span>Profile</span>
+    </div></div></div>
+<div class="screen-panel panel-ms-9">
+  <div class="appbar">
+    <div class="iconbtn"><svg class="icon " width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M7.5 4.5l6 5.5-6 5.5" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <h1>Scan to Check-in</h1>
+    <div style="width:34px"></div>
+  </div>
+  <div style="height:calc(100% - 90px); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:20px; padding:0 30px; text-align:center;">
+    <div style="width:230px; height:230px; border-radius:24px; background:var(--surface); border:1px solid var(--line); position:relative; display:flex; align-items:center; justify-content:center;">
+      <div style="position:absolute; inset:14px; border:2px solid var(--red-bright); border-radius:16px;"></div>
+      <div style="position:absolute; left:14px; right:14px; top:50%; height:2px; background:linear-gradient(90deg,transparent,var(--red-bright),transparent);"></div>
+      <svg class="icon " width="70" height="70" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><rect x="2.5" y="2.5" width="5.5" height="5.5" rx=".8" stroke-width="1.6"/><rect x="12" y="2.5" width="5.5" height="5.5" rx=".8" stroke-width="1.6"/><rect x="2.5" y="12" width="5.5" height="5.5" rx=".8" stroke-width="1.6"/><path d="M12 12.3h2.4v2.4H12zM16.1 12.3h1.4M12 16.4h1.4M15 15.4h2.6v2.6H15" stroke-width="1.5"/></svg>
+    </div>
+    <div>
+      <div style="font-weight:700; font-size:14.5px;">Point your camera at the gym QR</div>
+      <div class="muted" style="font-size:12px; margin-top:5px;">Located at the entrance turnstile</div>
+    </div>
+    <div class="card" style="width:100%; display:flex; align-items:center; gap:12px; text-align:left; border-color:rgba(63,178,127,.4);">
+      <div style="width:34px;height:34px;border-radius:50%; background:var(--green); display:flex; align-items:center; justify-content:center; flex-shrink:0;"><svg class="icon " width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M4 10.5l4 4 8-9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div>
+        <div style="font-size:12.5px; font-weight:700;">Membership Verified</div>
+        <div class="muted" style="font-size:11px;">Attendance marked · Streak +1 → 13 days</div>
+      </div>
+    </div>
+  </div></div>
+<div class="screen-panel panel-ms-10">
+  <div class="appbar">
+    <div style="width:34px"></div>
+    <h1>Workout</h1>
+    <div style="width:34px"></div>
+  </div>
+  <div class="px">
+    <div class="card" style="background:linear-gradient(160deg,rgba(229,9,20,.12),var(--surface));">
+      <div class="row"><span class="chip" style="background:var(--red); color:#fff; border:none;">PUSH DAY</span><span class="muted" style="font-size:11px;">48% complete</span></div>
+      <div style="font-family:'Manrope'; font-weight:800; font-size:19px; margin-top:12px;">Chest, Shoulders & Triceps</div>
+      <div class="row" style="margin-top:10px;">
+        <span class="muted" style="font-size:12px;">6 exercises</span>
+        <span class="muted" style="font-size:12px;">48 min</span>
+        <span class="muted" style="font-size:12px;">~380 kcal</span>
+      </div>
+      <div class="progress red" style="margin-top:12px;"><div style="width:48%"></div></div>
+    </div>
+  </div>
+  <div class="section-title">Exercises</div>
+  <div class="px" style="display:flex; flex-direction:column; gap:10px;">
+    
+    <div class="card" style="display:flex; align-items:center; gap:12px; padding:12px 14px;">
+      <div style="width:44px;height:44px;border-radius:11px; background:var(--surface-2); flex-shrink:0; display:flex;align-items:center;justify-content:center;">
+        <svg class="icon gold-text" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M4 10.5l4 4 8-9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div style="flex:1;">
+        <div style="font-size:13px; font-weight:700; color:var(--muted); text-decoration:line-through;">Barbell Bench Press</div>
+        <div class="muted" style="font-size:11px; margin-top:2px;">4 sets × 8 reps · 60 kg</div>
+      </div>
+      <svg class="icon " width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M7.5 4.5l6 5.5-6 5.5" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="card" style="display:flex; align-items:center; gap:12px; padding:12px 14px;">
+      <div style="width:44px;height:44px;border-radius:11px; background:var(--surface-2); flex-shrink:0; display:flex;align-items:center;justify-content:center;">
+        <svg class="icon gold-text" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M4 10.5l4 4 8-9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div style="flex:1;">
+        <div style="font-size:13px; font-weight:700; color:var(--muted); text-decoration:line-through;">Incline Dumbbell Press</div>
+        <div class="muted" style="font-size:11px; margin-top:2px;">3 sets × 10 reps · 22 kg</div>
+      </div>
+      <svg class="icon " width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M7.5 4.5l6 5.5-6 5.5" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="card" style="display:flex; align-items:center; gap:12px; padding:12px 14px;">
+      <div style="width:44px;height:44px;border-radius:11px; background:var(--surface-2); flex-shrink:0; display:flex;align-items:center;justify-content:center;">
+        <svg class="icon " width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M2.2 10h2.2M15.6 10h2.2M4.4 6.8v6.4M15.6 6.8v6.4M6.6 10h6.8" stroke-width="1.9" stroke-linecap="round"/></svg>
+      </div>
+      <div style="flex:1;">
+        <div style="font-size:13px; font-weight:700; ">Seated Shoulder Press</div>
+        <div class="muted" style="font-size:11px; margin-top:2px;">3 sets × 10 reps · 16 kg</div>
+      </div>
+      <svg class="icon " width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M7.5 4.5l6 5.5-6 5.5" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="card" style="display:flex; align-items:center; gap:12px; padding:12px 14px;">
+      <div style="width:44px;height:44px;border-radius:11px; background:var(--surface-2); flex-shrink:0; display:flex;align-items:center;justify-content:center;">
+        <svg class="icon " width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M2.2 10h2.2M15.6 10h2.2M4.4 6.8v6.4M15.6 6.8v6.4M6.6 10h6.8" stroke-width="1.9" stroke-linecap="round"/></svg>
+      </div>
+      <div style="flex:1;">
+        <div style="font-size:13px; font-weight:700; ">Cable Lateral Raise</div>
+        <div class="muted" style="font-size:11px; margin-top:2px;">3 sets × 12 reps · 8 kg</div>
+      </div>
+      <svg class="icon " width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M7.5 4.5l6 5.5-6 5.5" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="card" style="display:flex; align-items:center; gap:12px; padding:12px 14px;">
+      <div style="width:44px;height:44px;border-radius:11px; background:var(--surface-2); flex-shrink:0; display:flex;align-items:center;justify-content:center;">
+        <svg class="icon " width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M2.2 10h2.2M15.6 10h2.2M4.4 6.8v6.4M15.6 6.8v6.4M6.6 10h6.8" stroke-width="1.9" stroke-linecap="round"/></svg>
+      </div>
+      <div style="flex:1;">
+        <div style="font-size:13px; font-weight:700; ">Tricep Rope Pushdown</div>
+        <div class="muted" style="font-size:11px; margin-top:2px;">3 sets × 12 reps · 20 kg</div>
+      </div>
+      <svg class="icon " width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M7.5 4.5l6 5.5-6 5.5" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="card" style="display:flex; align-items:center; gap:12px; padding:12px 14px;">
+      <div style="width:44px;height:44px;border-radius:11px; background:var(--surface-2); flex-shrink:0; display:flex;align-items:center;justify-content:center;">
+        <svg class="icon " width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M2.2 10h2.2M15.6 10h2.2M4.4 6.8v6.4M15.6 6.8v6.4M6.6 10h6.8" stroke-width="1.9" stroke-linecap="round"/></svg>
+      </div>
+      <div style="flex:1;">
+        <div style="font-size:13px; font-weight:700; ">Overhead Tricep Extension</div>
+        <div class="muted" style="font-size:11px; margin-top:2px;">3 sets × 12 reps · 14 kg</div>
+      </div>
+      <svg class="icon " width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M7.5 4.5l6 5.5-6 5.5" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+  </div>
+  <div class="bottomnav">
+    <div class="navitem ">
+      <svg class="icon " width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M3 10.2L10 4l7 6.2M5 9v7.2a1 1 0 0 0 1 1h3v-5h2v5h3a1 1 0 0 0 1-1V9" stroke-width="1.7"/></svg>
+      <span>Home</span>
+    </div>
+    <div class="navitem ">
+      <svg class="icon " width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="6" height="6" rx="1.3" stroke-width="1.7"/><rect x="11" y="3" width="6" height="6" rx="1.3" stroke-width="1.7"/><rect x="3" y="11" width="6" height="6" rx="1.3" stroke-width="1.7"/><rect x="11" y="11" width="6" height="6" rx="1.3" stroke-width="1.7"/></svg>
+      <span>Services</span>
+    </div>
+    <div class="navitem active">
+      <svg class="icon " width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M2.2 10h2.2M15.6 10h2.2M4.4 6.8v6.4M15.6 6.8v6.4M6.6 10h6.8" stroke-width="1.9" stroke-linecap="round"/></svg>
+      <span>Workout</span>
+    </div>
+    <div class="navitem ">
+      <svg class="icon " width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><rect x="2.5" y="2.5" width="5.5" height="5.5" rx=".8" stroke-width="1.6"/><rect x="12" y="2.5" width="5.5" height="5.5" rx=".8" stroke-width="1.6"/><rect x="2.5" y="12" width="5.5" height="5.5" rx=".8" stroke-width="1.6"/><path d="M12 12.3h2.4v2.4H12zM16.1 12.3h1.4M12 16.4h1.4M15 15.4h2.6v2.6H15" stroke-width="1.5"/></svg>
+      <span>Attend</span>
+    </div>
+    <div class="navitem ">
+      <svg class="icon " width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="6.6" r="3.1" stroke-width="1.7"/><path d="M3.6 17c0-3.5 2.9-6.2 6.4-6.2s6.4 2.7 6.4 6.2" stroke-width="1.7"/></svg>
+      <span>Profile</span>
+    </div></div></div>
+<div class="screen-panel panel-ms-11">
+  <div class="appbar">
+    <div class="iconbtn"><svg class="icon " width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M7.5 4.5l6 5.5-6 5.5" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <h1>Barbell Bench Press</h1>
+    <div style="width:34px"></div>
+  </div>
+  <div class="px">
+    <div class="hero-image" style="align-items:center; justify-content:center;">
+      <div style="width:58px;height:58px;border-radius:50%; background:rgba(229,9,20,.85); display:flex;align-items:center;justify-content:center; box-shadow:0 10px 24px rgba(229,9,20,.4);">
+        <svg class="icon " width="22" height="22" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M6.5 4.5l9 5.5-9 5.5V4.5z" stroke-width="1.5" stroke-linejoin="round" fill="currentColor"/></svg>
+      </div>
+    </div>
+  </div>
+  <div class="px" style="display:flex; gap:8px; margin-top:12px;">
+    <span class="chip">Chest</span><span class="chip">Compound</span><span class="chip" style="color:var(--amber);">Intermediate</span>
+  </div>
+  <div class="stat-grid" style="margin-top:12px;">
+    <div class="stat-card">
+    <div class="label">Sets</div>
+    <div class="val" style="">4</div>
+    
+  </div>
+    <div class="stat-card">
+    <div class="label">Reps</div>
+    <div class="val" style="">8</div>
+    
+  </div>
+    <div class="stat-card">
+    <div class="label">Weight</div>
+    <div class="val" style="">60 kg</div>
+    
+  </div>
+    <div class="stat-card">
+    <div class="label">Rest</div>
+    <div class="val" style="">90 sec</div>
+    
+  </div>
+  </div>
+  <div class="px" style="margin-top:14px;">
+    <button class="btn btn-primary"><svg class="icon " width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M6.5 4.5l9 5.5-9 5.5V4.5z" stroke-width="1.5" stroke-linejoin="round" fill="currentColor"/></svg> Watch How to Perform</button>
+  </div>
+  <div class="section-title">Instructions</div>
+  <div class="px muted" style="font-size:12.5px; line-height:1.6;">
+    Lie flat on the bench with feet planted. Grip the bar slightly wider than shoulder-width. Lower the bar to mid-chest with control, then press up until arms are fully extended without locking out aggressively.
+  </div>
+  <div class="section-title">Trainer Notes</div>
+  <div class="px">
+    <div class="card" style="display:flex; gap:10px;">
+      <div class="avatar" style="width:34px;height:34px;font-size:12.24px">AR</div>
+      <div>
+        <div style="font-size:12.5px; font-weight:700;">Aditya Rao</div>
+        <div class="muted" style="font-size:11.5px; margin-top:3px;">Keep your shoulder blades pinned back. Add 2.5kg next week if all reps feel controlled.</div>
+      </div>
+    </div>
+  </div>
+  <div class="bottomnav">
+    <div class="navitem ">
+      <svg class="icon " width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M3 10.2L10 4l7 6.2M5 9v7.2a1 1 0 0 0 1 1h3v-5h2v5h3a1 1 0 0 0 1-1V9" stroke-width="1.7"/></svg>
+      <span>Home</span>
+    </div>
+    <div class="navitem ">
+      <svg class="icon " width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="6" height="6" rx="1.3" stroke-width="1.7"/><rect x="11" y="3" width="6" height="6" rx="1.3" stroke-width="1.7"/><rect x="3" y="11" width="6" height="6" rx="1.3" stroke-width="1.7"/><rect x="11" y="11" width="6" height="6" rx="1.3" stroke-width="1.7"/></svg>
+      <span>Services</span>
+    </div>
+    <div class="navitem active">
+      <svg class="icon " width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M2.2 10h2.2M15.6 10h2.2M4.4 6.8v6.4M15.6 6.8v6.4M6.6 10h6.8" stroke-width="1.9" stroke-linecap="round"/></svg>
+      <span>Workout</span>
+    </div>
+    <div class="navitem ">
+      <svg class="icon " width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><rect x="2.5" y="2.5" width="5.5" height="5.5" rx=".8" stroke-width="1.6"/><rect x="12" y="2.5" width="5.5" height="5.5" rx=".8" stroke-width="1.6"/><rect x="2.5" y="12" width="5.5" height="5.5" rx=".8" stroke-width="1.6"/><path d="M12 12.3h2.4v2.4H12zM16.1 12.3h1.4M12 16.4h1.4M15 15.4h2.6v2.6H15" stroke-width="1.5"/></svg>
+      <span>Attend</span>
+    </div>
+    <div class="navitem ">
+      <svg class="icon " width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="6.6" r="3.1" stroke-width="1.7"/><path d="M3.6 17c0-3.5 2.9-6.2 6.4-6.2s6.4 2.7 6.4 6.2" stroke-width="1.7"/></svg>
+      <span>Profile</span>
+    </div></div></div>
+<div class="screen-panel panel-ms-12">
+  <div class="appbar">
+    <div style="width:34px"></div>
+    <h1>Personalized Diet</h1>
+    <div style="width:34px"></div>
+  </div>
+  <div class="px">
+    <div class="card" style="background:linear-gradient(160deg,rgba(212,175,55,.1),var(--surface)); border-color:rgba(212,175,55,.3);">
+      <div class="row"><span style="font-weight:700; font-size:13.5px;">Daily Target · Muscle Gain</span><svg class="icon gold-text" width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M12.8 3.2c.1 1-.4 2-1 2.6-.6.6-1.6 1.1-2.5 1-.1-1 .4-2.1 1-2.7.7-.6 1.6-1 2.5-.9z" stroke-width="1.4" fill="currentColor" stroke="none" opacity=".9"/><path d="M14.8 10c0-2-1.6-2.9-1.7-2.9-.7-1-1.9-1.2-2.3-1.2-1 0-1.9.6-2.4.6-.5 0-1.3-.6-2.1-.6-1.1 0-2.7.8-3.4 2.4-1.4 3-.4 7.5 1 9.9.7 1.2 1.5 2.5 2.6 2.4 1-.1 1.4-.7 2.6-.7s1.6.7 2.6.7c1.1 0 1.8-1.1 2.5-2.3a10 10 0 0 0 1.1-2.4c-2.7-1-3-4.3-.5-5.9z" stroke-width="1.4"/></svg></div>
+      <div style="display:flex; gap:16px; margin-top:14px;">
+        <div><div class="big-num" style="font-size:20px;">2,640</div><div class="muted" style="font-size:10.5px;">KCAL</div></div>
+        <div><div class="big-num" style="font-size:20px; color:var(--red-bright);">160g</div><div class="muted" style="font-size:10.5px;">PROTEIN</div></div>
+        <div><div class="big-num" style="font-size:20px;">280g</div><div class="muted" style="font-size:10.5px;">CARBS</div></div>
+        <div><div class="big-num" style="font-size:20px;">70g</div><div class="muted" style="font-size:10.5px;">FATS</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="section-title">Today's Meals · Vegetarian · ₹350 budget</div>
+  <div class="px" style="display:flex; flex-direction:column; gap:10px;">
+    
+    <div class="card" style="padding:12px 14px;">
+      <div class="row"><span class="gold-text" style="font-size:10.5px; font-weight:800; letter-spacing:.5px;">BREAKFAST</span><span class="muted" style="font-size:11px;">7:00 AM</span></div>
+      <div style="font-size:13px; font-weight:700; margin-top:6px;">Paneer bhurji + 2 multigrain roti</div>
+      <div class="row" style="margin-top:8px;">
+        <span class="muted" style="font-size:11px;">420 kcal · 28g protein</span>
+        <span style="font-size:12px; font-weight:700;">₹70</span>
+      </div>
+    </div>
+    <div class="card" style="padding:12px 14px;">
+      <div class="row"><span class="gold-text" style="font-size:10.5px; font-weight:800; letter-spacing:.5px;">MID-MORNING</span><span class="muted" style="font-size:11px;">10:30 AM</span></div>
+      <div style="font-size:13px; font-weight:700; margin-top:6px;">Whey shake + banana</div>
+      <div class="row" style="margin-top:8px;">
+        <span class="muted" style="font-size:11px;">260 kcal · 24g protein</span>
+        <span style="font-size:12px; font-weight:700;">₹45</span>
+      </div>
+    </div>
+    <div class="card" style="padding:12px 14px;">
+      <div class="row"><span class="gold-text" style="font-size:10.5px; font-weight:800; letter-spacing:.5px;">LUNCH</span><span class="muted" style="font-size:11px;">1:00 PM</span></div>
+      <div style="font-size:13px; font-weight:700; margin-top:6px;">Dal, rice, mixed veg, curd</div>
+      <div class="row" style="margin-top:8px;">
+        <span class="muted" style="font-size:11px;">560 kcal · 22g protein</span>
+        <span style="font-size:12px; font-weight:700;">₹90</span>
+      </div>
+    </div>
+    <div class="card" style="padding:12px 14px;">
+      <div class="row"><span class="gold-text" style="font-size:10.5px; font-weight:800; letter-spacing:.5px;">PRE-WORKOUT</span><span class="muted" style="font-size:11px;">5:00 PM</span></div>
+      <div style="font-size:13px; font-weight:700; margin-top:6px;">Peanut butter toast + black coffee</div>
+      <div class="row" style="margin-top:8px;">
+        <span class="muted" style="font-size:11px;">310 kcal · 12g protein</span>
+        <span style="font-size:12px; font-weight:700;">₹35</span>
+      </div>
+    </div>
+    <div class="card" style="padding:12px 14px;">
+      <div class="row"><span class="gold-text" style="font-size:10.5px; font-weight:800; letter-spacing:.5px;">POST-WORKOUT</span><span class="muted" style="font-size:11px;">7:30 PM</span></div>
+      <div style="font-size:13px; font-weight:700; margin-top:6px;">Whey shake + 4 boiled eggs</div>
+      <div class="row" style="margin-top:8px;">
+        <span class="muted" style="font-size:11px;">380 kcal · 42g protein</span>
+        <span style="font-size:12px; font-weight:700;">₹55</span>
+      </div>
+    </div>
+    <div class="card" style="padding:12px 14px;">
+      <div class="row"><span class="gold-text" style="font-size:10.5px; font-weight:800; letter-spacing:.5px;">DINNER</span><span class="muted" style="font-size:11px;">9:00 PM</span></div>
+      <div style="font-size:13px; font-weight:700; margin-top:6px;">Soya chunk curry + 2 roti + salad</div>
+      <div class="row" style="margin-top:8px;">
+        <span class="muted" style="font-size:11px;">410 kcal · 30g protein</span>
+        <span style="font-size:12px; font-weight:700;">₹55</span>
+      </div>
+    </div>
+  </div>
+  <div class="bottomnav">
+    <div class="navitem ">
+      <svg class="icon " width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M3 10.2L10 4l7 6.2M5 9v7.2a1 1 0 0 0 1 1h3v-5h2v5h3a1 1 0 0 0 1-1V9" stroke-width="1.7"/></svg>
+      <span>Home</span>
+    </div>
+    <div class="navitem active">
+      <svg class="icon " width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="6" height="6" rx="1.3" stroke-width="1.7"/><rect x="11" y="3" width="6" height="6" rx="1.3" stroke-width="1.7"/><rect x="3" y="11" width="6" height="6" rx="1.3" stroke-width="1.7"/><rect x="11" y="11" width="6" height="6" rx="1.3" stroke-width="1.7"/></svg>
+      <span>Services</span>
+    </div>
+    <div class="navitem ">
+      <svg class="icon " width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M2.2 10h2.2M15.6 10h2.2M4.4 6.8v6.4M15.6 6.8v6.4M6.6 10h6.8" stroke-width="1.9" stroke-linecap="round"/></svg>
+      <span>Workout</span>
+    </div>
+    <div class="navitem ">
+      <svg class="icon " width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><rect x="2.5" y="2.5" width="5.5" height="5.5" rx=".8" stroke-width="1.6"/><rect x="12" y="2.5" width="5.5" height="5.5" rx=".8" stroke-width="1.6"/><rect x="2.5" y="12" width="5.5" height="5.5" rx=".8" stroke-width="1.6"/><path d="M12 12.3h2.4v2.4H12zM16.1 12.3h1.4M12 16.4h1.4M15 15.4h2.6v2.6H15" stroke-width="1.5"/></svg>
+      <span>Attend</span>
+    </div>
+    <div class="navitem ">
+      <svg class="icon " width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="6.6" r="3.1" stroke-width="1.7"/><path d="M3.6 17c0-3.5 2.9-6.2 6.4-6.2s6.4 2.7 6.4 6.2" stroke-width="1.7"/></svg>
+      <span>Profile</span>
+    </div></div></div>
+<div class="screen-panel panel-ms-13">
+  <div class="appbar">
+    <div style="width:34px"></div>
+    <h1>Personal Training</h1>
+    <div style="width:34px"></div>
+  </div>
+  <div class="px">
+    <div class="card" style="display:flex; gap:12px; align-items:center;">
+      <div class="avatar" style="width:54px;height:54px;font-size:19.439999999999998px">AR</div>
+      <div>
+        <div style="font-weight:800; font-size:15px;">Aditya Rao</div>
+        <div class="muted" style="font-size:11.5px; margin-top:2px;">Strength & Hypertrophy Specialist</div>
+        <div style="display:flex; gap:5px; margin-top:6px;">
+          <span class="chip" style="padding:4px 9px; font-size:10.5px;">6 yrs exp</span>
+          <span class="chip" style="padding:4px 9px; font-size:10.5px;">4.9 ★</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="px" style="margin-top:14px;">
+    <div class="card" style="text-align:center; background:linear-gradient(160deg,rgba(229,9,20,.1),var(--surface));">
+      <div class="muted" style="font-size:11px; font-weight:700; letter-spacing:1px;">PERSONAL TRAINING PACKAGE</div>
+      <div class="big-num" style="font-size:30px; margin-top:8px;">12 SESSIONS</div>
+      <div style="display:flex; justify-content:center; gap:24px; margin-top:12px;">
+        <div><div style="font-weight:800; font-size:17px; color:#5fd39e;">8</div><div class="muted" style="font-size:10.5px;">COMPLETED</div></div>
+        <div><div style="font-weight:800; font-size:17px; color:var(--gold-soft);">4</div><div class="muted" style="font-size:10.5px;">REMAINING</div></div>
+      </div>
+      <div class="progress red" style="margin-top:14px;"><div style="width:66%"></div></div>
+    </div>
+  </div>
+  <div class="px" style="margin-top:14px;">
+    <div class="card" style="display:flex; align-items:center; justify-content:space-between;">
+      <div>
+        <div class="muted" style="font-size:10.5px; font-weight:700;">NEXT SESSION</div>
+        <div style="font-weight:700; font-size:14px; margin-top:4px;">Today • 6:30 PM</div>
+      </div>
+      <button class="btn btn-outline btn-sm">Reschedule</button>
+    </div>
+  </div>
+  <div class="section-title">Session History</div>
+  <div class="px" style="display:flex; flex-direction:column; gap:8px;">
+    <div class="list-row"><div style="flex:1; font-size:12.5px;">08 Sep, 6:30 PM</div><div style="font-size:11.5px; font-weight:700; color:#5fd39e;">Completed</div></div><div class="list-row"><div style="flex:1; font-size:12.5px;">05 Sep, 6:30 PM</div><div style="font-size:11.5px; font-weight:700; color:#5fd39e;">Completed</div></div><div class="list-row"><div style="flex:1; font-size:12.5px;">02 Sep, 6:30 PM</div><div style="font-size:11.5px; font-weight:700; color:var(--red-bright);">No-show</div></div>
+  </div>
+  <div class="bottomnav">
+    <div class="navitem ">
+      <svg class="icon " width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M3 10.2L10 4l7 6.2M5 9v7.2a1 1 0 0 0 1 1h3v-5h2v5h3a1 1 0 0 0 1-1V9" stroke-width="1.7"/></svg>
+      <span>Home</span>
+    </div>
+    <div class="navitem active">
+      <svg class="icon " width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="6" height="6" rx="1.3" stroke-width="1.7"/><rect x="11" y="3" width="6" height="6" rx="1.3" stroke-width="1.7"/><rect x="3" y="11" width="6" height="6" rx="1.3" stroke-width="1.7"/><rect x="11" y="11" width="6" height="6" rx="1.3" stroke-width="1.7"/></svg>
+      <span>Services</span>
+    </div>
+    <div class="navitem ">
+      <svg class="icon " width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M2.2 10h2.2M15.6 10h2.2M4.4 6.8v6.4M15.6 6.8v6.4M6.6 10h6.8" stroke-width="1.9" stroke-linecap="round"/></svg>
+      <span>Workout</span>
+    </div>
+    <div class="navitem ">
+      <svg class="icon " width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><rect x="2.5" y="2.5" width="5.5" height="5.5" rx=".8" stroke-width="1.6"/><rect x="12" y="2.5" width="5.5" height="5.5" rx=".8" stroke-width="1.6"/><rect x="2.5" y="12" width="5.5" height="5.5" rx=".8" stroke-width="1.6"/><path d="M12 12.3h2.4v2.4H12zM16.1 12.3h1.4M12 16.4h1.4M15 15.4h2.6v2.6H15" stroke-width="1.5"/></svg>
+      <span>Attend</span>
+    </div>
+    <div class="navitem ">
+      <svg class="icon " width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="6.6" r="3.1" stroke-width="1.7"/><path d="M3.6 17c0-3.5 2.9-6.2 6.4-6.2s6.4 2.7 6.4 6.2" stroke-width="1.7"/></svg>
+      <span>Profile</span>
+    </div></div></div>
+<div class="screen-panel panel-ms-14">
+  <div class="appbar">
+    <div style="width:34px"></div>
+    <h1>Notifications</h1>
+    <div style="width:34px"></div>
+  </div>
+  <div class="px" style="display:flex; gap:8px; overflow-x:auto; padding-bottom:6px;">
+    <span class="chip" style="background:var(--red);color:#fff;border-color:var(--red)">All</span><span class="chip" style="">Membership</span><span class="chip" style="">Payment</span><span class="chip" style="">Workout</span><span class="chip" style="">PT</span><span class="chip" style="">Offers</span>
+  </div>
+  <div class="px" style="display:flex; flex-direction:column; gap:9px; margin-top:12px;">
+    
+    <div class="card" style="display:flex; gap:11px; padding:13px 14px; border-color:rgba(229,9,20,.35);">
+      <div style="width:36px;height:36px;border-radius:10px; background:var(--surface-2); display:flex;align-items:center;justify-content:center; flex-shrink:0; color:var(--amber);"><svg class="icon " width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><rect x="2.7" y="4" width="14.6" height="13" rx="1.6" stroke-width="1.6"/><path d="M2.7 8.2h14.6M6.6 2.2v3.2M13.4 2.2v3.2" stroke-width="1.6" stroke-linecap="round"/><circle cx="13.2" cy="13" r="3" stroke-width="1.5" fill="var(--black-deep)"/><path d="M13.2 11.4v1.6l1.1.8" stroke-width="1.3" stroke-linecap="round"/></svg></div>
+      <div style="flex:1;">
+        <div class="row"><span style="font-size:12.5px; font-weight:700;">Membership expiring soon</span><span style="width:7px;height:7px;border-radius:50%;background:var(--red-bright)"></span></div>
+        <div class="muted" style="font-size:11.5px; margin-top:3px; line-height:1.4;">Only 3 days remaining on your Gold membership.</div>
+        <div class="muted" style="font-size:10.5px; margin-top:5px;">2h ago</div>
+      </div>
+    </div>
+    <div class="card" style="display:flex; gap:11px; padding:13px 14px; border-color:rgba(229,9,20,.35);">
+      <div style="width:36px;height:36px;border-radius:10px; background:var(--surface-2); display:flex;align-items:center;justify-content:center; flex-shrink:0; color:#5fd39e;"><svg class="icon " width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><rect x="2.2" y="4.5" width="15.6" height="11" rx="1.8" stroke-width="1.6"/><path d="M2.2 8h15.6" stroke-width="1.6"/></svg></div>
+      <div style="flex:1;">
+        <div class="row"><span style="font-size:12.5px; font-weight:700;">Payment successful</span><span style="width:7px;height:7px;border-radius:50%;background:var(--red-bright)"></span></div>
+        <div class="muted" style="font-size:11.5px; margin-top:3px; line-height:1.4;">₹2,999 received for Gold Membership renewal.</div>
+        <div class="muted" style="font-size:10.5px; margin-top:5px;">1d ago</div>
+      </div>
+    </div>
+    <div class="card" style="display:flex; gap:11px; padding:13px 14px; ">
+      <div style="width:36px;height:36px;border-radius:10px; background:var(--surface-2); display:flex;align-items:center;justify-content:center; flex-shrink:0; color:var(--red-bright);"><svg class="icon " width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M2.2 10h2.2M15.6 10h2.2M4.4 6.8v6.4M15.6 6.8v6.4M6.6 10h6.8" stroke-width="1.9" stroke-linecap="round"/></svg></div>
+      <div style="flex:1;">
+        <div class="row"><span style="font-size:12.5px; font-weight:700;">New workout assigned</span></div>
+        <div class="muted" style="font-size:11.5px; margin-top:3px; line-height:1.4;">Aditya assigned you a new Push Day routine.</div>
+        <div class="muted" style="font-size:10.5px; margin-top:5px;">1d ago</div>
+      </div>
+    </div>
+    <div class="card" style="display:flex; gap:11px; padding:13px 14px; ">
+      <div style="width:36px;height:36px;border-radius:10px; background:var(--surface-2); display:flex;align-items:center;justify-content:center; flex-shrink:0; color:var(--gold-soft);"><svg class="icon " width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M12.8 3.2c.1 1-.4 2-1 2.6-.6.6-1.6 1.1-2.5 1-.1-1 .4-2.1 1-2.7.7-.6 1.6-1 2.5-.9z" stroke-width="1.4" fill="currentColor" stroke="none" opacity=".9"/><path d="M14.8 10c0-2-1.6-2.9-1.7-2.9-.7-1-1.9-1.2-2.3-1.2-1 0-1.9.6-2.4.6-.5 0-1.3-.6-2.1-.6-1.1 0-2.7.8-3.4 2.4-1.4 3-.4 7.5 1 9.9.7 1.2 1.5 2.5 2.6 2.4 1-.1 1.4-.7 2.6-.7s1.6.7 2.6.7c1.1 0 1.8-1.1 2.5-2.3a10 10 0 0 0 1.1-2.4c-2.7-1-3-4.3-.5-5.9z" stroke-width="1.4"/></svg></div>
+      <div style="flex:1;">
+        <div class="row"><span style="font-size:12.5px; font-weight:700;">Diet plan updated</span></div>
+        <div class="muted" style="font-size:11.5px; margin-top:3px; line-height:1.4;">Your meal plan has been revised for muscle gain.</div>
+        <div class="muted" style="font-size:10.5px; margin-top:5px;">2d ago</div>
+      </div>
+    </div>
+    <div class="card" style="display:flex; gap:11px; padding:13px 14px; ">
+      <div style="width:36px;height:36px;border-radius:10px; background:var(--surface-2); display:flex;align-items:center;justify-content:center; flex-shrink:0; color:var(--red-bright);"><svg class="icon " width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10.5" r="7" stroke-width="1.6"/><path d="M10 6.8v3.9l2.6 1.6" stroke-width="1.6" stroke-linecap="round"/><path d="M7.2 2.6h5.6" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+      <div style="flex:1;">
+        <div class="row"><span style="font-size:12.5px; font-weight:700;">PT session reminder</span></div>
+        <div class="muted" style="font-size:11.5px; margin-top:3px; line-height:1.4;">Session with Aditya Rao at 6:30 PM today.</div>
+        <div class="muted" style="font-size:10.5px; margin-top:5px;">2d ago</div>
+      </div>
+    </div>
+    <div class="card" style="display:flex; gap:11px; padding:13px 14px; ">
+      <div style="width:36px;height:36px;border-radius:10px; background:var(--surface-2); display:flex;align-items:center;justify-content:center; flex-shrink:0; color:var(--muted);"><svg class="icon " width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M10 3.2a3.9 3.9 0 0 0-3.9 3.9v2.3c0 .9-.4 1.8-1 2.5l-.8.9h11.4l-.8-.9a3.6 3.6 0 0 1-1-2.5V7.1A3.9 3.9 0 0 0 10 3.2z" stroke-width="1.6"/><path d="M8.3 15.6a1.8 1.8 0 0 0 3.4 0" stroke-width="1.6"/></svg></div>
+      <div style="flex:1;">
+        <div class="row"><span style="font-size:12.5px; font-weight:700;">Gym holiday notice</span></div>
+        <div class="muted" style="font-size:11.5px; margin-top:3px; line-height:1.4;">Gold Army will remain closed on 15 Aug for Independence Day.</div>
+        <div class="muted" style="font-size:10.5px; margin-top:5px;">5d ago</div>
+      </div>
+    </div>
+    <div class="card" style="display:flex; gap:11px; padding:13px 14px; ">
+      <div style="width:36px;height:36px;border-radius:10px; background:var(--surface-2); display:flex;align-items:center;justify-content:center; flex-shrink:0; color:var(--gold-soft);"><svg class="icon " width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M6 3.5h8v3.8a4 4 0 0 1-8 0V3.5z" stroke-width="1.6"/><path d="M6 4.8H3.8a1.6 1.6 0 0 0 0 3.2H6M14 4.8h2.2a1.6 1.6 0 0 1 0 3.2H14M10 11.3v2.6M7.2 17h5.6M8.5 13.9h3l.5 3.1h-4z" stroke-width="1.5"/></svg></div>
+      <div style="flex:1;">
+        <div class="row"><span style="font-size:12.5px; font-weight:700;">New offer for you</span></div>
+        <div class="muted" style="font-size:11.5px; margin-top:3px; line-height:1.4;">Upgrade to Gym+PT and save ₹1,500 this month.</div>
+        <div class="muted" style="font-size:10.5px; margin-top:5px;">6d ago</div>
+      </div>
+    </div>
+  </div></div>
+<div class="screen-panel panel-ms-15">
+  <div class="px" style="padding-top:20px; display:flex; flex-direction:column; align-items:center; text-align:center;">
+    <div class="avatar" style="width:72px;height:72px;font-size:25.919999999999998px">RD</div>
+    <div style="font-weight:800; font-size:16px; margin-top:10px;">Rohan Deshmukh</div>
+    <span class="badge badge-vip" style="margin-top:6px;"><svg class="icon " width="11" height="11" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M6 3.5h8v3.8a4 4 0 0 1-8 0V3.5z" stroke-width="1.6"/><path d="M6 4.8H3.8a1.6 1.6 0 0 0 0 3.2H6M14 4.8h2.2a1.6 1.6 0 0 1 0 3.2H14M10 11.3v2.6M7.2 17h5.6M8.5 13.9h3l.5 3.1h-4z" stroke-width="1.5"/></svg> GOLD MEMBER</span>
+  </div>
+  <div class="section-title">Account</div>
+  <div class="px" style="display:flex; flex-direction:column; gap:8px;">
+    
+    <div class="card" style="display:flex; align-items:center; gap:12px; padding:13px 14px;">
+      <svg class="icon t2" width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="6.6" r="3.1" stroke-width="1.7"/><path d="M3.6 17c0-3.5 2.9-6.2 6.4-6.2s6.4 2.7 6.4 6.2" stroke-width="1.7"/></svg><span style="flex:1; font-size:13px; font-weight:600;">Personal Information</span><svg class="icon " width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M7.5 4.5l6 5.5-6 5.5" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="card" style="display:flex; align-items:center; gap:12px; padding:13px 14px;">
+      <svg class="icon t2" width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="7" stroke-width="1.6"/><circle cx="10" cy="10" r="3.6" stroke-width="1.6"/><circle cx="10" cy="10" r=".9" fill="currentColor" stroke="none"/></svg><span style="flex:1; font-size:13px; font-weight:600;">Fitness Information</span><svg class="icon " width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M7.5 4.5l6 5.5-6 5.5" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="card" style="display:flex; align-items:center; gap:12px; padding:13px 14px;">
+      <svg class="icon t2" width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><rect x="2.7" y="4" width="14.6" height="13" rx="1.6" stroke-width="1.6"/><path d="M2.7 8.2h14.6M6.6 2.2v3.2M13.4 2.2v3.2" stroke-width="1.6" stroke-linecap="round"/><circle cx="13.2" cy="13" r="3" stroke-width="1.5" fill="var(--black-deep)"/><path d="M13.2 11.4v1.6l1.1.8" stroke-width="1.3" stroke-linecap="round"/></svg><span style="flex:1; font-size:13px; font-weight:600;">Membership History</span><svg class="icon " width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M7.5 4.5l6 5.5-6 5.5" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="card" style="display:flex; align-items:center; gap:12px; padding:13px 14px;">
+      <svg class="icon t2" width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><rect x="2.2" y="4.5" width="15.6" height="11" rx="1.8" stroke-width="1.6"/><path d="M2.2 8h15.6" stroke-width="1.6"/></svg><span style="flex:1; font-size:13px; font-weight:600;">Payment History</span><svg class="icon " width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M7.5 4.5l6 5.5-6 5.5" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="card" style="display:flex; align-items:center; gap:12px; padding:13px 14px;">
+      <svg class="icon t2" width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M10 3.2a3.9 3.9 0 0 0-3.9 3.9v2.3c0 .9-.4 1.8-1 2.5l-.8.9h11.4l-.8-.9a3.6 3.6 0 0 1-1-2.5V7.1A3.9 3.9 0 0 0 10 3.2z" stroke-width="1.6"/><path d="M8.3 15.6a1.8 1.8 0 0 0 3.4 0" stroke-width="1.6"/></svg><span style="flex:1; font-size:13px; font-weight:600;">Notification Preferences</span><svg class="icon " width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M7.5 4.5l6 5.5-6 5.5" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="card" style="display:flex; align-items:center; gap:12px; padding:13px 14px;">
+      <svg class="icon t2" width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="9" width="12" height="8" rx="1.6" stroke-width="1.6"/><path d="M6.5 9V6.2a3.5 3.5 0 0 1 7 0V9" stroke-width="1.6"/></svg><span style="flex:1; font-size:13px; font-weight:600;">Privacy & Security</span><svg class="icon " width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M7.5 4.5l6 5.5-6 5.5" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="card" style="display:flex; align-items:center; gap:12px; padding:13px 14px; border-color:rgba(229,9,20,.3); margin-top:6px;">
+      <svg class="icon " width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M8 3.5H4.6a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1H8M13.3 6.5l3.4 3.5-3.4 3.5M16.5 10H8" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span style="flex:1; font-size:13px; font-weight:700; color:var(--red-bright);">Logout</span>
+    </div>
+  </div>
+  <div class="bottomnav">
+    <div class="navitem ">
+      <svg class="icon " width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M3 10.2L10 4l7 6.2M5 9v7.2a1 1 0 0 0 1 1h3v-5h2v5h3a1 1 0 0 0 1-1V9" stroke-width="1.7"/></svg>
+      <span>Home</span>
+    </div>
+    <div class="navitem ">
+      <svg class="icon " width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="6" height="6" rx="1.3" stroke-width="1.7"/><rect x="11" y="3" width="6" height="6" rx="1.3" stroke-width="1.7"/><rect x="3" y="11" width="6" height="6" rx="1.3" stroke-width="1.7"/><rect x="11" y="11" width="6" height="6" rx="1.3" stroke-width="1.7"/></svg>
+      <span>Services</span>
+    </div>
+    <div class="navitem ">
+      <svg class="icon " width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M2.2 10h2.2M15.6 10h2.2M4.4 6.8v6.4M15.6 6.8v6.4M6.6 10h6.8" stroke-width="1.9" stroke-linecap="round"/></svg>
+      <span>Workout</span>
+    </div>
+    <div class="navitem ">
+      <svg class="icon " width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><rect x="2.5" y="2.5" width="5.5" height="5.5" rx=".8" stroke-width="1.6"/><rect x="12" y="2.5" width="5.5" height="5.5" rx=".8" stroke-width="1.6"/><rect x="2.5" y="12" width="5.5" height="5.5" rx=".8" stroke-width="1.6"/><path d="M12 12.3h2.4v2.4H12zM16.1 12.3h1.4M12 16.4h1.4M15 15.4h2.6v2.6H15" stroke-width="1.5"/></svg>
+      <span>Attend</span>
+    </div>
+    <div class="navitem active">
+      <svg class="icon " width="21" height="21" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="6.6" r="3.1" stroke-width="1.7"/><path d="M3.6 17c0-3.5 2.9-6.2 6.4-6.2s6.4 2.7 6.4 6.2" stroke-width="1.7"/></svg>
+      <span>Profile</span>
+    </div></div></div>
+              </div>
+              <div class="admin-panels-wrap admin-panels">
+              <div class="screen-panel panel-as-0">
+  <div class="px" style="padding-top:16px;" >
+    <div class="row">
+      <div>
+        <div class="muted" style="font-size:11.5px;">GOLD ARMY · SANGAMNER</div>
+        <div style="font-weight:800; font-size:16px; margin-top:2px;">Business Overview</div>
+      </div>
+      <div class="iconbtn"><svg class="icon " width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M10 3.2a3.9 3.9 0 0 0-3.9 3.9v2.3c0 .9-.4 1.8-1 2.5l-.8.9h11.4l-.8-.9a3.6 3.6 0 0 1-1-2.5V7.1A3.9 3.9 0 0 0 10 3.2z" stroke-width="1.6"/><path d="M8.3 15.6a1.8 1.8 0 0 0 3.4 0" stroke-width="1.6"/></svg></div>
+    </div>
+  </div>
+  <div class="stat-grid" style="margin-top:14px;">
+    <div class="stat-card">
+    <div class="label">Total Members</div>
+    <div class="val" style="">1,284</div>
+    <div class="delta" style="color:#5fd39e">+18 this month</div>
+  </div>
+    <div class="stat-card">
+    <div class="label">Active Members</div>
+    <div class="val" style="color:#5fd39e">1,096</div>
+    
+  </div>
+    <div class="stat-card">
+    <div class="label">Expiring (7d)</div>
+    <div class="val" style="color:var(--amber)">42</div>
+    
+  </div>
+    <div class="stat-card">
+    <div class="label">Expired</div>
+    <div class="val" style="color:var(--red-bright)">61</div>
+    
+  </div>
+  </div>
+  <div class="stat-grid" style="margin-top:10px;">
+    <div class="stat-card">
+    <div class="label">Today’s Attendance</div>
+    <div class="val" style="">318</div>
+    
+  </div>
+    <div class="stat-card">
+    <div class="label">PT Sessions Today</div>
+    <div class="val" style="">24</div>
+    
+  </div>
+  </div>
+  <div class="px" style="margin-top:10px;">
+    <div class="card" style="background:linear-gradient(160deg,rgba(212,175,55,.1),var(--surface)); border-color:rgba(212,175,55,.3);">
+      <div class="row"><span class="muted" style="font-size:10.5px; font-weight:700;">TODAY'S REVENUE</span><span class="gold-text" style="font-size:10.5px; font-weight:700;">+12% vs yesterday</span></div>
+      <div class="big-num" style="font-size:26px; margin-top:6px;">₹84,200</div>
+      <div class="muted" style="font-size:11px; margin-top:4px;">Monthly revenue: ₹18,42,600</div>
+    </div>
+  </div>
+  <div class="px" style="margin-top:12px;">
+    <div class="card">
+      <div class="row"><span style="font-weight:700; font-size:13px;">Revenue — Last 7 Days</span></div>
+      <div style="display:flex; align-items:flex-end; gap:8px; height:80px; margin-top:14px;">
+        <div style="flex:1; height:40%; background:linear-gradient(180deg,var(--red-bright),var(--red)); border-radius:5px 5px 0 0;"></div><div style="flex:1; height:55%; background:linear-gradient(180deg,var(--red-bright),var(--red)); border-radius:5px 5px 0 0;"></div><div style="flex:1; height:48%; background:linear-gradient(180deg,var(--red-bright),var(--red)); border-radius:5px 5px 0 0;"></div><div style="flex:1; height:70%; background:linear-gradient(180deg,var(--red-bright),var(--red)); border-radius:5px 5px 0 0;"></div><div style="flex:1; height:62%; background:linear-gradient(180deg,var(--red-bright),var(--red)); border-radius:5px 5px 0 0;"></div><div style="flex:1; height:85%; background:linear-gradient(180deg,var(--red-bright),var(--red)); border-radius:5px 5px 0 0;"></div><div style="flex:1; height:66%; background:linear-gradient(180deg,var(--red-bright),var(--red)); border-radius:5px 5px 0 0;"></div>
+      </div>
+      <div style="display:flex; gap:8px; margin-top:6px;"><div class="muted" style="flex:1; text-align:center; font-size:10px;">M</div><div class="muted" style="flex:1; text-align:center; font-size:10px;">T</div><div class="muted" style="flex:1; text-align:center; font-size:10px;">W</div><div class="muted" style="flex:1; text-align:center; font-size:10px;">T</div><div class="muted" style="flex:1; text-align:center; font-size:10px;">F</div><div class="muted" style="flex:1; text-align:center; font-size:10px;">S</div><div class="muted" style="flex:1; text-align:center; font-size:10px;">S</div></div>
+    </div>
+  </div>
+  <div class="px" style="margin-top:12px;">
+    <div class="card">
+      <div style="font-weight:700; font-size:13px; margin-bottom:10px;">Service Distribution</div>
+      
+      <div style="margin-bottom:9px;">
+        <div class="row" style="margin-bottom:4px;"><span style="font-size:11.5px;">General Gym</span><span class="muted" style="font-size:11px;">44%</span></div>
+        <div class="progress"><div style="width:44%; background:var(--red);"></div></div>
+      </div>
+      <div style="margin-bottom:9px;">
+        <div class="row" style="margin-bottom:4px;"><span style="font-size:11.5px;">Gym + PT</span><span class="muted" style="font-size:11px;">31%</span></div>
+        <div class="progress"><div style="width:31%; background:var(--gold-soft);"></div></div>
+      </div>
+      <div style="margin-bottom:9px;">
+        <div class="row" style="margin-bottom:4px;"><span style="font-size:11.5px;">Cardio</span><span class="muted" style="font-size:11px;">15%</span></div>
+        <div class="progress"><div style="width:15%; background:var(--platinum);"></div></div>
+      </div>
+      <div style="margin-bottom:9px;">
+        <div class="row" style="margin-bottom:4px;"><span style="font-size:11.5px;">Gym + Cardio</span><span class="muted" style="font-size:11px;">10%</span></div>
+        <div class="progress"><div style="width:10%; background:var(--muted);"></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="section-title">Recent Activity</div>
+  <div class="px" style="display:flex; flex-direction:column; gap:8px;">
+    <div class="list-row"><div style="width:6px;height:6px;border-radius:50%;background:#5fd39e; margin-right:6px;"></div><div style="flex:1; font-size:12px;">Priya Kulkarni renewed Gold Membership</div><span class="muted" style="font-size:10.5px;">2 min ago</span></div><div class="list-row"><div style="width:6px;height:6px;border-radius:50%;background:var(--gold-soft); margin-right:6px;"></div><div style="flex:1; font-size:12px;">New member: Sanjay Patil registered</div><span class="muted" style="font-size:10.5px;">18 min ago</span></div><div class="list-row"><div style="width:6px;height:6px;border-radius:50%;background:var(--red-bright); margin-right:6px;"></div><div style="flex:1; font-size:12px;">Payment failed for Ramesh Joshi</div><span class="muted" style="font-size:10.5px;">40 min ago</span></div>
+  </div>
+  <div class="bottomnav">
+    <div class="navitem active">
+      <svg class="icon " width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><rect x="2.5" y="2.5" width="7" height="5" rx="1.2" stroke-width="1.6"/><rect x="11.5" y="2.5" width="6" height="9" rx="1.2" stroke-width="1.6"/><rect x="2.5" y="9.5" width="7" height="8" rx="1.2" stroke-width="1.6"/><rect x="11.5" y="13.5" width="6" height="4" rx="1.2" stroke-width="1.6"/></svg>
+      <span>Dashboard</span>
+    </div>
+    <div class="navitem ">
+      <svg class="icon " width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><circle cx="7" cy="6.8" r="2.6" stroke-width="1.6"/><circle cx="14.2" cy="7.6" r="2" stroke-width="1.6"/><path d="M2.3 17c0-2.9 2.1-5 4.7-5s4.7 2.1 4.7 5M12.6 17c0-2-1.4-3.7-3.2-4.4" stroke-width="1.6"/></svg>
+      <span>Members</span>
+    </div>
+    <div class="navitem ">
+      <svg class="icon " width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><rect x="2.7" y="4" width="14.6" height="13" rx="1.6" stroke-width="1.6"/><path d="M2.7 8.2h14.6M6.6 2.2v3.2M13.4 2.2v3.2" stroke-width="1.6" stroke-linecap="round"/><circle cx="13.2" cy="13" r="3" stroke-width="1.5" fill="var(--black-deep)"/><path d="M13.2 11.4v1.6l1.1.8" stroke-width="1.3" stroke-linecap="round"/></svg>
+      <span>Expiry</span>
+    </div>
+    <div class="navitem ">
+      <svg class="icon " width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><rect x="2.2" y="5.4" width="15.6" height="11" rx="1.6" stroke-width="1.6"/><path d="M2.2 8.4h15.6" stroke-width="1.6"/><circle cx="14.4" cy="12" r="1.1" fill="currentColor" stroke="none"/></svg>
+      <span>Revenue</span>
+    </div>
+    <div class="navitem ">
+      <svg class="icon " width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M10 3.2a3.9 3.9 0 0 0-3.9 3.9v2.3c0 .9-.4 1.8-1 2.5l-.8.9h11.4l-.8-.9a3.6 3.6 0 0 1-1-2.5V7.1A3.9 3.9 0 0 0 10 3.2z" stroke-width="1.6"/><path d="M8.3 15.6a1.8 1.8 0 0 0 3.4 0" stroke-width="1.6"/></svg>
+      <span>Notify</span>
+    </div></div></div>
+<div class="screen-panel panel-as-1">
+  <div class="appbar">
+    <div style="width:34px"></div>
+    <h1>Members</h1>
+    <div class="iconbtn" style="position:relative"><svg class="icon " width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M3 4.5h14M6 10h8M8.6 15.5h2.8" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+  </div>
+  <div class="px" style="display:flex; gap:8px;">
+    <div class="card" style="flex:1; display:flex; align-items:center; gap:8px; padding:10px 12px;"><svg class="icon muted" width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><circle cx="8.6" cy="8.6" r="5.4" stroke-width="1.6"/><path d="M15.5 15.5l-3-3" stroke-width="1.6" stroke-linecap="round"/></svg><span class="muted" style="font-size:12.5px;">Search by name or phone</span></div>
+    <div class="iconbtn"><svg class="icon " width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M10 4.5v11M4.5 10h11" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+  </div>
+  <div class="px" style="display:flex; gap:8px; margin-top:10px; overflow-x:auto;">
+    <span class="chip" style="background:var(--red);color:#fff;border-color:var(--red)">All 1,284</span><span class="chip" style="">Active 1,096</span><span class="chip" style="">Expiring 42</span><span class="chip" style="">Expired 61</span><span class="chip" style="">Frozen 12</span>
+  </div>
+  <div class="px" style="display:flex; flex-direction:column; gap:9px; margin-top:12px;">
+    
+    <div class="card" style="display:flex; align-items:center; gap:11px; padding:12px 13px;">
+      <div class="avatar" style="width:38px;height:38px;font-size:13.68px">PK</div>
+      <div style="flex:1;">
+        <div style="font-size:13px; font-weight:700;">Priya Kulkarni</div>
+        <div class="muted" style="font-size:11px; margin-top:2px;">Gym + PT · Exp 04 Oct 2026</div>
+      </div>
+      <span class="badge badge-active">ACTIVE</span>
+    </div>
+    <div class="card" style="display:flex; align-items:center; gap:11px; padding:12px 13px;">
+      <div class="avatar" style="width:38px;height:38px;font-size:13.68px">SP</div>
+      <div style="flex:1;">
+        <div style="font-size:13px; font-weight:700;">Sanjay Patil</div>
+        <div class="muted" style="font-size:11px; margin-top:2px;">Gym + Cardio · Exp 15 Sep 2026</div>
+      </div>
+      <span class="badge badge-expiring">EXPIRING SOON</span>
+    </div>
+    <div class="card" style="display:flex; align-items:center; gap:11px; padding:12px 13px;">
+      <div class="avatar" style="width:38px;height:38px;font-size:13.68px">RJ</div>
+      <div style="flex:1;">
+        <div style="font-size:13px; font-weight:700;">Ramesh Joshi</div>
+        <div class="muted" style="font-size:11px; margin-top:2px;">General Gym · Exp 12 Sep 2026</div>
+      </div>
+      <span class="badge badge-expiring">EXPIRING SOON</span>
+    </div>
+    <div class="card" style="display:flex; align-items:center; gap:11px; padding:12px 13px;">
+      <div class="avatar" style="width:38px;height:38px;font-size:13.68px">NS</div>
+      <div style="flex:1;">
+        <div style="font-size:13px; font-weight:700;">Neha Shinde</div>
+        <div class="muted" style="font-size:11px; margin-top:2px;">Gym + PT · Exp 01 Sep 2026</div>
+      </div>
+      <span class="badge badge-expired">EXPIRED</span>
+    </div>
+    <div class="card" style="display:flex; align-items:center; gap:11px; padding:12px 13px;">
+      <div class="avatar" style="width:38px;height:38px;font-size:13.68px">VC</div>
+      <div style="flex:1;">
+        <div style="font-size:13px; font-weight:700;">Vikas Chavan</div>
+        <div class="muted" style="font-size:11px; margin-top:2px;">General Gym · Exp —</div>
+      </div>
+      <span class="badge badge-frozen">FROZEN</span>
+    </div>
+  </div>
+  <div class="bottomnav">
+    <div class="navitem ">
+      <svg class="icon " width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><rect x="2.5" y="2.5" width="7" height="5" rx="1.2" stroke-width="1.6"/><rect x="11.5" y="2.5" width="6" height="9" rx="1.2" stroke-width="1.6"/><rect x="2.5" y="9.5" width="7" height="8" rx="1.2" stroke-width="1.6"/><rect x="11.5" y="13.5" width="6" height="4" rx="1.2" stroke-width="1.6"/></svg>
+      <span>Dashboard</span>
+    </div>
+    <div class="navitem active">
+      <svg class="icon " width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><circle cx="7" cy="6.8" r="2.6" stroke-width="1.6"/><circle cx="14.2" cy="7.6" r="2" stroke-width="1.6"/><path d="M2.3 17c0-2.9 2.1-5 4.7-5s4.7 2.1 4.7 5M12.6 17c0-2-1.4-3.7-3.2-4.4" stroke-width="1.6"/></svg>
+      <span>Members</span>
+    </div>
+    <div class="navitem ">
+      <svg class="icon " width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><rect x="2.7" y="4" width="14.6" height="13" rx="1.6" stroke-width="1.6"/><path d="M2.7 8.2h14.6M6.6 2.2v3.2M13.4 2.2v3.2" stroke-width="1.6" stroke-linecap="round"/><circle cx="13.2" cy="13" r="3" stroke-width="1.5" fill="var(--black-deep)"/><path d="M13.2 11.4v1.6l1.1.8" stroke-width="1.3" stroke-linecap="round"/></svg>
+      <span>Expiry</span>
+    </div>
+    <div class="navitem ">
+      <svg class="icon " width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><rect x="2.2" y="5.4" width="15.6" height="11" rx="1.6" stroke-width="1.6"/><path d="M2.2 8.4h15.6" stroke-width="1.6"/><circle cx="14.4" cy="12" r="1.1" fill="currentColor" stroke="none"/></svg>
+      <span>Revenue</span>
+    </div>
+    <div class="navitem ">
+      <svg class="icon " width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M10 3.2a3.9 3.9 0 0 0-3.9 3.9v2.3c0 .9-.4 1.8-1 2.5l-.8.9h11.4l-.8-.9a3.6 3.6 0 0 1-1-2.5V7.1A3.9 3.9 0 0 0 10 3.2z" stroke-width="1.6"/><path d="M8.3 15.6a1.8 1.8 0 0 0 3.4 0" stroke-width="1.6"/></svg>
+      <span>Notify</span>
+    </div></div></div>
+<div class="screen-panel panel-as-2">
+  <div class="appbar">
+    <div class="iconbtn"><svg class="icon " width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M7.5 4.5l6 5.5-6 5.5" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <h1>Member Profile</h1>
+    <div class="iconbtn" style="position:relative"><svg class="icon " width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M12.6 3.4l4 4-9.7 9.7-4.6.6.6-4.6z" stroke-width="1.5" stroke-linejoin="round"/></svg></div>
+  </div>
+  <div class="px" style="display:flex; flex-direction:column; align-items:center; text-align:center;">
+    <div class="avatar" style="width:68px;height:68px;font-size:24.48px">PK</div>
+    <div style="font-weight:800; font-size:15.5px; margin-top:8px;">Priya Kulkarni</div>
+    <div class="muted" style="font-size:11.5px; margin-top:2px;">+91 98230 11245 · Member since Jan 2025</div>
+    <div style="margin-top:8px;"><span class="badge badge-active">ACTIVE</span></div>
+  </div>
+  <div class="px" style="display:flex; gap:8px; margin-top:14px;">
+    <button class="btn btn-outline btn-sm" style="flex:1;"><svg class="icon " width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M5 15.5L3.7 17l1.5-1.3A7 7 0 1 0 3 10a7 7 0 0 0 1 3.6z" stroke-width="1.4"/><path d="M7.3 7.7c.2-.4.4-.4.6-.4h.5c.2 0 .4 0 .5.4.2.5.6 1.4.6 1.5.1.1.1.3 0 .4-.1.2-.2.3-.3.4-.1.2-.3.3-.1.6.2.4.9 1.4 2 2 .1.1.3.2.5.1.2-.1.7-.7.9-1 .1-.2.3-.2.5-.1l1.3.6c.2.1.3.2.3.4 0 .5-.2 1.2-.5 1.4-.4.3-1 .5-1.6.4-.6-.1-2-.5-3.2-1.7-1.4-1.4-1.9-2.9-2-3.1-.1-.2-.6-.9-.6-1.7 0-.5.1-.6.1-.6z" fill="currentColor" stroke="none"/></svg> WhatsApp</button>
+    <button class="btn btn-outline btn-sm" style="flex:1;"><svg class="icon " width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M4 3.5h3l1.2 4-2 1.4a10 10 0 0 0 4.9 4.9l1.4-2 4 1.2v3a1.4 1.4 0 0 1-1.5 1.4C8.5 17 3 11.5 2.6 5a1.4 1.4 0 0 1 1.4-1.5z" stroke-width="1.5" stroke-linejoin="round"/></svg> Call</button>
+    <button class="btn btn-outline btn-sm" style="flex:1;"><svg class="icon " width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M10 2.5v15M4 6.5l12 7M16 6.5l-12 7M10 2.5l-1.6 1.6M10 2.5l1.6 1.6M10 17.5l-1.6-1.6M10 17.5l1.6-1.6M4 6.5l.6-2.2M4 6.5l2.2.6M16 6.5l-.6-2.2M16 6.5l-2.2.6M4 13.5l.6 2.2M4 13.5l2.2-.6M16 13.5l-.6 2.2M16 13.5l-2.2-.6" stroke-width="1.3" stroke-linecap="round"/></svg> Freeze</button>
+  </div>
+
+  <div class="pill-tabs" style="margin-top:16px;">
+    <button class="active">Overview</button>
+    <button>Payments</button>
+    <button>Progress</button>
+  </div>
+
+  <div class="px" style="margin-top:14px;">
+    <div class="card" style="background:linear-gradient(160deg,rgba(212,175,55,.1),var(--surface)); border-color:rgba(212,175,55,.3);">
+      <div class="row"><span class="badge badge-vip"><svg class="icon " width="11" height="11" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M6 3.5h8v3.8a4 4 0 0 1-8 0V3.5z" stroke-width="1.6"/><path d="M6 4.8H3.8a1.6 1.6 0 0 0 0 3.2H6M14 4.8h2.2a1.6 1.6 0 0 1 0 3.2H14M10 11.3v2.6M7.2 17h5.6M8.5 13.9h3l.5 3.1h-4z" stroke-width="1.5"/></svg> GOLD</span><span class="muted" style="font-size:11px;">23 days left</span></div>
+      <div style="font-weight:700; font-size:14px; margin-top:10px;">Gym + Personal Training</div>
+      <div class="muted" style="font-size:11.5px; margin-top:2px;">Expires 04 Oct 2026 · ₹8,499</div>
+    </div>
+  </div>
+  <div class="stat-grid" style="margin-top:12px;">
+    <div class="stat-card">
+    <div class="label">Attendance</div>
+    <div class="val" style="">88%</div>
+    
+  </div>
+    <div class="stat-card">
+    <div class="label">PT Sessions</div>
+    <div class="val" style="">8 / 12</div>
+    
+  </div>
+    <div class="stat-card">
+    <div class="label">Current Streak</div>
+    <div class="val" style="">12 days</div>
+    
+  </div>
+    <div class="stat-card">
+    <div class="label">Total Spend</div>
+    <div class="val" style="color:var(--gold-soft)">₹34,600</div>
+    
+  </div>
+  </div>
+  <div class="section-title">Trainer Notes</div>
+  <div class="px">
+    <div class="card">
+      <div class="muted" style="font-size:12px; line-height:1.5;">Great consistency this month. Progressing well on bench press — increased from 40kg to 52kg over 6 weeks. Focus on hip mobility next cycle.</div>
+      <div class="muted" style="font-size:10.5px; margin-top:8px;">— Aditya Rao, 08 Sep 2026</div>
+    </div>
+  </div>
+  <div class="bottomnav">
+    <div class="navitem ">
+      <svg class="icon " width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><rect x="2.5" y="2.5" width="7" height="5" rx="1.2" stroke-width="1.6"/><rect x="11.5" y="2.5" width="6" height="9" rx="1.2" stroke-width="1.6"/><rect x="2.5" y="9.5" width="7" height="8" rx="1.2" stroke-width="1.6"/><rect x="11.5" y="13.5" width="6" height="4" rx="1.2" stroke-width="1.6"/></svg>
+      <span>Dashboard</span>
+    </div>
+    <div class="navitem active">
+      <svg class="icon " width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><circle cx="7" cy="6.8" r="2.6" stroke-width="1.6"/><circle cx="14.2" cy="7.6" r="2" stroke-width="1.6"/><path d="M2.3 17c0-2.9 2.1-5 4.7-5s4.7 2.1 4.7 5M12.6 17c0-2-1.4-3.7-3.2-4.4" stroke-width="1.6"/></svg>
+      <span>Members</span>
+    </div>
+    <div class="navitem ">
+      <svg class="icon " width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><rect x="2.7" y="4" width="14.6" height="13" rx="1.6" stroke-width="1.6"/><path d="M2.7 8.2h14.6M6.6 2.2v3.2M13.4 2.2v3.2" stroke-width="1.6" stroke-linecap="round"/><circle cx="13.2" cy="13" r="3" stroke-width="1.5" fill="var(--black-deep)"/><path d="M13.2 11.4v1.6l1.1.8" stroke-width="1.3" stroke-linecap="round"/></svg>
+      <span>Expiry</span>
+    </div>
+    <div class="navitem ">
+      <svg class="icon " width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><rect x="2.2" y="5.4" width="15.6" height="11" rx="1.6" stroke-width="1.6"/><path d="M2.2 8.4h15.6" stroke-width="1.6"/><circle cx="14.4" cy="12" r="1.1" fill="currentColor" stroke="none"/></svg>
+      <span>Revenue</span>
+    </div>
+    <div class="navitem ">
+      <svg class="icon " width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M10 3.2a3.9 3.9 0 0 0-3.9 3.9v2.3c0 .9-.4 1.8-1 2.5l-.8.9h11.4l-.8-.9a3.6 3.6 0 0 1-1-2.5V7.1A3.9 3.9 0 0 0 10 3.2z" stroke-width="1.6"/><path d="M8.3 15.6a1.8 1.8 0 0 0 3.4 0" stroke-width="1.6"/></svg>
+      <span>Notify</span>
+    </div></div></div>
+<div class="screen-panel panel-as-3">
+  <div class="appbar">
+    <div style="width:34px"></div>
+    <h1>Expiry Management</h1>
+    <div style="width:34px"></div>
+  </div>
+  <div class="px" style="display:flex; gap:8px; overflow-x:auto;">
+    <span class="chip" style="; flex:0 0 auto;">Today 6</span><span class="chip" style="; flex:0 0 auto;">1 Day 9</span><span class="chip" style="background:var(--red);color:#fff;border-color:var(--red); flex:0 0 auto;">3 Days 18</span><span class="chip" style="; flex:0 0 auto;">7 Days 42</span><span class="chip" style="; flex:0 0 auto;">Expired 61</span>
+  </div>
+  <div class="section-title">Expires in 3 days</div>
+  <div class="px" style="display:flex; flex-direction:column; gap:9px;">
+    
+    <div class="card" style="padding:12px 13px;">
+      <div class="row">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div class="avatar" style="width:34px;height:34px;font-size:12.24px">SP</div>
+          <div>
+            <div style="font-size:12.5px; font-weight:700;">Sanjay Patil</div>
+            <div class="muted" style="font-size:10.5px; margin-top:2px;">Gym + Cardio · Exp 15 Sep 2026</div>
+          </div>
+        </div>
+        <span class="badge badge-expiring">3 DAYS</span>
+      </div>
+      <div style="display:flex; gap:7px; margin-top:11px;">
+        <button class="btn btn-ghost btn-sm" style="flex:1;"><svg class="icon " width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M5 15.5L3.7 17l1.5-1.3A7 7 0 1 0 3 10a7 7 0 0 0 1 3.6z" stroke-width="1.4"/><path d="M7.3 7.7c.2-.4.4-.4.6-.4h.5c.2 0 .4 0 .5.4.2.5.6 1.4.6 1.5.1.1.1.3 0 .4-.1.2-.2.3-.3.4-.1.2-.3.3-.1.6.2.4.9 1.4 2 2 .1.1.3.2.5.1.2-.1.7-.7.9-1 .1-.2.3-.2.5-.1l1.3.6c.2.1.3.2.3.4 0 .5-.2 1.2-.5 1.4-.4.3-1 .5-1.6.4-.6-.1-2-.5-3.2-1.7-1.4-1.4-1.9-2.9-2-3.1-.1-.2-.6-.9-.6-1.7 0-.5.1-.6.1-.6z" fill="currentColor" stroke="none"/></svg> WhatsApp</button>
+        <button class="btn btn-ghost btn-sm" style="flex:1;"><svg class="icon " width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M10 3.2a3.9 3.9 0 0 0-3.9 3.9v2.3c0 .9-.4 1.8-1 2.5l-.8.9h11.4l-.8-.9a3.6 3.6 0 0 1-1-2.5V7.1A3.9 3.9 0 0 0 10 3.2z" stroke-width="1.6"/><path d="M8.3 15.6a1.8 1.8 0 0 0 3.4 0" stroke-width="1.6"/></svg> Notify</button>
+        <button class="btn btn-primary btn-sm" style="flex:1;">Renew</button>
+      </div>
+    </div>
+    <div class="card" style="padding:12px 13px;">
+      <div class="row">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div class="avatar" style="width:34px;height:34px;font-size:12.24px">MK</div>
+          <div>
+            <div style="font-size:12.5px; font-weight:700;">Meera Kale</div>
+            <div class="muted" style="font-size:10.5px; margin-top:2px;">General Gym · Exp 15 Sep 2026</div>
+          </div>
+        </div>
+        <span class="badge badge-expiring">3 DAYS</span>
+      </div>
+      <div style="display:flex; gap:7px; margin-top:11px;">
+        <button class="btn btn-ghost btn-sm" style="flex:1;"><svg class="icon " width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M5 15.5L3.7 17l1.5-1.3A7 7 0 1 0 3 10a7 7 0 0 0 1 3.6z" stroke-width="1.4"/><path d="M7.3 7.7c.2-.4.4-.4.6-.4h.5c.2 0 .4 0 .5.4.2.5.6 1.4.6 1.5.1.1.1.3 0 .4-.1.2-.2.3-.3.4-.1.2-.3.3-.1.6.2.4.9 1.4 2 2 .1.1.3.2.5.1.2-.1.7-.7.9-1 .1-.2.3-.2.5-.1l1.3.6c.2.1.3.2.3.4 0 .5-.2 1.2-.5 1.4-.4.3-1 .5-1.6.4-.6-.1-2-.5-3.2-1.7-1.4-1.4-1.9-2.9-2-3.1-.1-.2-.6-.9-.6-1.7 0-.5.1-.6.1-.6z" fill="currentColor" stroke="none"/></svg> WhatsApp</button>
+        <button class="btn btn-ghost btn-sm" style="flex:1;"><svg class="icon " width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M10 3.2a3.9 3.9 0 0 0-3.9 3.9v2.3c0 .9-.4 1.8-1 2.5l-.8.9h11.4l-.8-.9a3.6 3.6 0 0 1-1-2.5V7.1A3.9 3.9 0 0 0 10 3.2z" stroke-width="1.6"/><path d="M8.3 15.6a1.8 1.8 0 0 0 3.4 0" stroke-width="1.6"/></svg> Notify</button>
+        <button class="btn btn-primary btn-sm" style="flex:1;">Renew</button>
+      </div>
+    </div>
+    <div class="card" style="padding:12px 13px;">
+      <div class="row">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div class="avatar" style="width:34px;height:34px;font-size:12.24px">OB</div>
+          <div>
+            <div style="font-size:12.5px; font-weight:700;">Om Bhosale</div>
+            <div class="muted" style="font-size:10.5px; margin-top:2px;">Gym + PT · Exp 15 Sep 2026</div>
+          </div>
+        </div>
+        <span class="badge badge-expiring">3 DAYS</span>
+      </div>
+      <div style="display:flex; gap:7px; margin-top:11px;">
+        <button class="btn btn-ghost btn-sm" style="flex:1;"><svg class="icon " width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M5 15.5L3.7 17l1.5-1.3A7 7 0 1 0 3 10a7 7 0 0 0 1 3.6z" stroke-width="1.4"/><path d="M7.3 7.7c.2-.4.4-.4.6-.4h.5c.2 0 .4 0 .5.4.2.5.6 1.4.6 1.5.1.1.1.3 0 .4-.1.2-.2.3-.3.4-.1.2-.3.3-.1.6.2.4.9 1.4 2 2 .1.1.3.2.5.1.2-.1.7-.7.9-1 .1-.2.3-.2.5-.1l1.3.6c.2.1.3.2.3.4 0 .5-.2 1.2-.5 1.4-.4.3-1 .5-1.6.4-.6-.1-2-.5-3.2-1.7-1.4-1.4-1.9-2.9-2-3.1-.1-.2-.6-.9-.6-1.7 0-.5.1-.6.1-.6z" fill="currentColor" stroke="none"/></svg> WhatsApp</button>
+        <button class="btn btn-ghost btn-sm" style="flex:1;"><svg class="icon " width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M10 3.2a3.9 3.9 0 0 0-3.9 3.9v2.3c0 .9-.4 1.8-1 2.5l-.8.9h11.4l-.8-.9a3.6 3.6 0 0 1-1-2.5V7.1A3.9 3.9 0 0 0 10 3.2z" stroke-width="1.6"/><path d="M8.3 15.6a1.8 1.8 0 0 0 3.4 0" stroke-width="1.6"/></svg> Notify</button>
+        <button class="btn btn-primary btn-sm" style="flex:1;">Renew</button>
+      </div>
+    </div>
+  </div>
+  <div class="bottomnav">
+    <div class="navitem ">
+      <svg class="icon " width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><rect x="2.5" y="2.5" width="7" height="5" rx="1.2" stroke-width="1.6"/><rect x="11.5" y="2.5" width="6" height="9" rx="1.2" stroke-width="1.6"/><rect x="2.5" y="9.5" width="7" height="8" rx="1.2" stroke-width="1.6"/><rect x="11.5" y="13.5" width="6" height="4" rx="1.2" stroke-width="1.6"/></svg>
+      <span>Dashboard</span>
+    </div>
+    <div class="navitem ">
+      <svg class="icon " width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><circle cx="7" cy="6.8" r="2.6" stroke-width="1.6"/><circle cx="14.2" cy="7.6" r="2" stroke-width="1.6"/><path d="M2.3 17c0-2.9 2.1-5 4.7-5s4.7 2.1 4.7 5M12.6 17c0-2-1.4-3.7-3.2-4.4" stroke-width="1.6"/></svg>
+      <span>Members</span>
+    </div>
+    <div class="navitem active">
+      <svg class="icon " width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><rect x="2.7" y="4" width="14.6" height="13" rx="1.6" stroke-width="1.6"/><path d="M2.7 8.2h14.6M6.6 2.2v3.2M13.4 2.2v3.2" stroke-width="1.6" stroke-linecap="round"/><circle cx="13.2" cy="13" r="3" stroke-width="1.5" fill="var(--black-deep)"/><path d="M13.2 11.4v1.6l1.1.8" stroke-width="1.3" stroke-linecap="round"/></svg>
+      <span>Expiry</span>
+    </div>
+    <div class="navitem ">
+      <svg class="icon " width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><rect x="2.2" y="5.4" width="15.6" height="11" rx="1.6" stroke-width="1.6"/><path d="M2.2 8.4h15.6" stroke-width="1.6"/><circle cx="14.4" cy="12" r="1.1" fill="currentColor" stroke="none"/></svg>
+      <span>Revenue</span>
+    </div>
+    <div class="navitem ">
+      <svg class="icon " width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M10 3.2a3.9 3.9 0 0 0-3.9 3.9v2.3c0 .9-.4 1.8-1 2.5l-.8.9h11.4l-.8-.9a3.6 3.6 0 0 1-1-2.5V7.1A3.9 3.9 0 0 0 10 3.2z" stroke-width="1.6"/><path d="M8.3 15.6a1.8 1.8 0 0 0 3.4 0" stroke-width="1.6"/></svg>
+      <span>Notify</span>
+    </div></div></div>
+<div class="screen-panel panel-as-4">
+  <div class="appbar">
+    <div style="width:34px"></div>
+    <h1>Payments & Revenue</h1>
+    <div style="width:34px"></div>
+  </div>
+  <div class="pill-tabs">
+    <button class="active">Overview</button>
+    <button>Pending</button>
+    <button>Refunds</button>
+  </div>
+  <div class="px" style="margin-top:14px;">
+    <div class="card" style="background:linear-gradient(160deg,rgba(212,175,55,.1),var(--surface)); border-color:rgba(212,175,55,.3);">
+      <div class="muted" style="font-size:10.5px; font-weight:700;">MONTHLY REVENUE</div>
+      <div class="big-num" style="font-size:27px; margin-top:6px;">₹18,42,600</div>
+      <div class="gold-text" style="font-size:11px; margin-top:4px; font-weight:700;">↑ 9.2% vs last month</div>
+    </div>
+  </div>
+  <div class="stat-grid" style="margin-top:10px;">
+    <div class="stat-card">
+    <div class="label">Daily Avg</div>
+    <div class="val" style="">₹61,420</div>
+    
+  </div>
+    <div class="stat-card">
+    <div class="label">Pending</div>
+    <div class="val" style="color:var(--amber)">₹1,28,900</div>
+    
+  </div>
+    <div class="stat-card">
+    <div class="label">Renewals</div>
+    <div class="val" style="">₹6,84,200</div>
+    
+  </div>
+    <div class="stat-card">
+    <div class="label">Refunds</div>
+    <div class="val" style="color:var(--red-bright)">₹18,400</div>
+    
+  </div>
+  </div>
+  <div class="section-title">Revenue by Plan</div>
+  <div class="px">
+    <div class="card">
+      
+      <div class="row" style="padding:8px 0; border-bottom:1px solid var(--line);"><span style="font-size:12.5px;">Gym + PT</span><span style="font-size:12.5px; font-weight:700;">₹9,12,400</span></div>
+      <div class="row" style="padding:8px 0; border-bottom:1px solid var(--line);"><span style="font-size:12.5px;">Gym + Cardio</span><span style="font-size:12.5px; font-weight:700;">₹5,20,100</span></div>
+      <div class="row" style="padding:8px 0; border-bottom:1px solid var(--line);"><span style="font-size:12.5px;">General Gym</span><span style="font-size:12.5px; font-weight:700;">₹4,10,100</span></div>
+    </div>
+  </div>
+  <div class="section-title">Recent Payments</div>
+  <div class="px" style="display:flex; flex-direction:column; gap:9px;">
+    
+    <div class="card" style="display:flex; align-items:center; gap:11px; padding:12px 13px;">
+      <div class="avatar" style="width:34px;height:34px;font-size:12.24px">PK</div>
+      <div style="flex:1;"><div style="font-size:12.5px; font-weight:700;">Priya Kulkarni</div><div class="muted" style="font-size:10.5px; margin-top:2px;">Gold Renewal</div></div>
+      <div style="text-align:right;"><div style="font-size:12.5px; font-weight:700;">₹8,499</div><span class="badge badge-active">ACTIVE</span></div>
+    </div>
+    <div class="card" style="display:flex; align-items:center; gap:11px; padding:12px 13px;">
+      <div class="avatar" style="width:34px;height:34px;font-size:12.24px">RJ</div>
+      <div style="flex:1;"><div style="font-size:12.5px; font-weight:700;">Ramesh Joshi</div><div class="muted" style="font-size:10.5px; margin-top:2px;">General Gym</div></div>
+      <div style="text-align:right;"><div style="font-size:12.5px; font-weight:700;">₹1,999</div><span class="badge badge-pending">PAYMENT PENDING</span></div>
+    </div>
+    <div class="card" style="display:flex; align-items:center; gap:11px; padding:12px 13px;">
+      <div class="avatar" style="width:34px;height:34px;font-size:12.24px">OB</div>
+      <div style="flex:1;"><div style="font-size:12.5px; font-weight:700;">Om Bhosale</div><div class="muted" style="font-size:10.5px; margin-top:2px;">Gym + PT</div></div>
+      <div style="text-align:right;"><div style="font-size:12.5px; font-weight:700;">₹16,999</div><span class="badge badge-active">ACTIVE</span></div>
+    </div>
+  </div>
+  <div class="bottomnav">
+    <div class="navitem ">
+      <svg class="icon " width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><rect x="2.5" y="2.5" width="7" height="5" rx="1.2" stroke-width="1.6"/><rect x="11.5" y="2.5" width="6" height="9" rx="1.2" stroke-width="1.6"/><rect x="2.5" y="9.5" width="7" height="8" rx="1.2" stroke-width="1.6"/><rect x="11.5" y="13.5" width="6" height="4" rx="1.2" stroke-width="1.6"/></svg>
+      <span>Dashboard</span>
+    </div>
+    <div class="navitem ">
+      <svg class="icon " width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><circle cx="7" cy="6.8" r="2.6" stroke-width="1.6"/><circle cx="14.2" cy="7.6" r="2" stroke-width="1.6"/><path d="M2.3 17c0-2.9 2.1-5 4.7-5s4.7 2.1 4.7 5M12.6 17c0-2-1.4-3.7-3.2-4.4" stroke-width="1.6"/></svg>
+      <span>Members</span>
+    </div>
+    <div class="navitem ">
+      <svg class="icon " width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><rect x="2.7" y="4" width="14.6" height="13" rx="1.6" stroke-width="1.6"/><path d="M2.7 8.2h14.6M6.6 2.2v3.2M13.4 2.2v3.2" stroke-width="1.6" stroke-linecap="round"/><circle cx="13.2" cy="13" r="3" stroke-width="1.5" fill="var(--black-deep)"/><path d="M13.2 11.4v1.6l1.1.8" stroke-width="1.3" stroke-linecap="round"/></svg>
+      <span>Expiry</span>
+    </div>
+    <div class="navitem active">
+      <svg class="icon " width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><rect x="2.2" y="5.4" width="15.6" height="11" rx="1.6" stroke-width="1.6"/><path d="M2.2 8.4h15.6" stroke-width="1.6"/><circle cx="14.4" cy="12" r="1.1" fill="currentColor" stroke="none"/></svg>
+      <span>Revenue</span>
+    </div>
+    <div class="navitem ">
+      <svg class="icon " width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M10 3.2a3.9 3.9 0 0 0-3.9 3.9v2.3c0 .9-.4 1.8-1 2.5l-.8.9h11.4l-.8-.9a3.6 3.6 0 0 1-1-2.5V7.1A3.9 3.9 0 0 0 10 3.2z" stroke-width="1.6"/><path d="M8.3 15.6a1.8 1.8 0 0 0 3.4 0" stroke-width="1.6"/></svg>
+      <span>Notify</span>
+    </div></div></div>
+<div class="screen-panel panel-as-5">
+  <div class="appbar">
+    <div class="iconbtn"><svg class="icon " width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M7.5 4.5l6 5.5-6 5.5" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <h1>New Notification</h1>
+    <div style="width:34px"></div>
+  </div>
+  <div class="px" style="display:flex; flex-direction:column; gap:12px;">
+    <div class="card" style="padding:13px 14px;">
+      <div class="muted" style="font-size:10.5px; margin-bottom:5px;">TITLE</div>
+      <div style="font-size:13.5px; font-weight:600;">Membership expiring soon</div>
+    </div>
+    <div class="card" style="padding:13px 14px;">
+      <div class="muted" style="font-size:10.5px; margin-bottom:5px;">MESSAGE</div>
+      <div style="font-size:12.5px; color:var(--text-2); line-height:1.5;">Your gym membership expires in 3 days. Renew now to keep training with us at Gold Army Fitness Club.</div>
+    </div>
+    <div>
+      <div class="muted" style="font-size:10.5px; margin-bottom:8px; font-weight:700;">AUDIENCE</div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <span class="chip" style="">All Members</span><span class="chip" style="background:var(--red);color:#fff;border-color:var(--red)">Expiring Members</span><span class="chip" style="">Expired</span><span class="chip" style="">Gold Plan</span><span class="chip" style="">Selected Members</span>
+      </div>
+    </div>
+    <div class="card" style="padding:13px 14px; display:flex; align-items:center; justify-content:space-between;">
+      <div>
+        <div style="font-size:12.5px; font-weight:700;">Schedule</div>
+        <div class="muted" style="font-size:11px; margin-top:2px;">Send immediately</div>
+      </div>
+      <svg class="icon muted" width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10.5" r="7" stroke-width="1.6"/><path d="M10 6.8v3.9l2.6 1.6" stroke-width="1.6" stroke-linecap="round"/><path d="M7.2 2.6h5.6" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </div>
+    <div class="divider"></div>
+    <div class="muted" style="font-size:10.5px; font-weight:700;">PREVIEW</div>
+    <div class="card" style="display:flex; gap:11px; padding:13px 14px; border-color:rgba(229,9,20,.3);">
+      <svg class="icon " width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><rect x="2.7" y="4" width="14.6" height="13" rx="1.6" stroke-width="1.6"/><path d="M2.7 8.2h14.6M6.6 2.2v3.2M13.4 2.2v3.2" stroke-width="1.6" stroke-linecap="round"/><circle cx="13.2" cy="13" r="3" stroke-width="1.5" fill="var(--black-deep)"/><path d="M13.2 11.4v1.6l1.1.8" stroke-width="1.3" stroke-linecap="round"/></svg>
+      <div>
+        <div style="font-size:12.5px; font-weight:700;">Membership expiring soon</div>
+        <div class="muted" style="font-size:11.5px; margin-top:3px;">Your gym membership expires in 3 days...</div>
+      </div>
+    </div>
+    <button class="btn btn-primary" style="margin-top:6px;"><svg class="icon " width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M17.5 2.5L2.5 8.8l6 2.7 2.7 6L17.5 2.5z" stroke-width="1.5" stroke-linejoin="round"/></svg> Send to 42 Members</button>
+  </div>
+  <div class="bottomnav">
+    <div class="navitem ">
+      <svg class="icon " width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><rect x="2.5" y="2.5" width="7" height="5" rx="1.2" stroke-width="1.6"/><rect x="11.5" y="2.5" width="6" height="9" rx="1.2" stroke-width="1.6"/><rect x="2.5" y="9.5" width="7" height="8" rx="1.2" stroke-width="1.6"/><rect x="11.5" y="13.5" width="6" height="4" rx="1.2" stroke-width="1.6"/></svg>
+      <span>Dashboard</span>
+    </div>
+    <div class="navitem ">
+      <svg class="icon " width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><circle cx="7" cy="6.8" r="2.6" stroke-width="1.6"/><circle cx="14.2" cy="7.6" r="2" stroke-width="1.6"/><path d="M2.3 17c0-2.9 2.1-5 4.7-5s4.7 2.1 4.7 5M12.6 17c0-2-1.4-3.7-3.2-4.4" stroke-width="1.6"/></svg>
+      <span>Members</span>
+    </div>
+    <div class="navitem ">
+      <svg class="icon " width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><rect x="2.7" y="4" width="14.6" height="13" rx="1.6" stroke-width="1.6"/><path d="M2.7 8.2h14.6M6.6 2.2v3.2M13.4 2.2v3.2" stroke-width="1.6" stroke-linecap="round"/><circle cx="13.2" cy="13" r="3" stroke-width="1.5" fill="var(--black-deep)"/><path d="M13.2 11.4v1.6l1.1.8" stroke-width="1.3" stroke-linecap="round"/></svg>
+      <span>Expiry</span>
+    </div>
+    <div class="navitem ">
+      <svg class="icon " width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><rect x="2.2" y="5.4" width="15.6" height="11" rx="1.6" stroke-width="1.6"/><path d="M2.2 8.4h15.6" stroke-width="1.6"/><circle cx="14.4" cy="12" r="1.1" fill="currentColor" stroke="none"/></svg>
+      <span>Revenue</span>
+    </div>
+    <div class="navitem active">
+      <svg class="icon " width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M10 3.2a3.9 3.9 0 0 0-3.9 3.9v2.3c0 .9-.4 1.8-1 2.5l-.8.9h11.4l-.8-.9a3.6 3.6 0 0 1-1-2.5V7.1A3.9 3.9 0 0 0 10 3.2z" stroke-width="1.6"/><path d="M8.3 15.6a1.8 1.8 0 0 0 3.4 0" stroke-width="1.6"/></svg>
+      <span>Notify</span>
+    </div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="member-captions-wrap">
+        <div class="caption-ms-0 screen-caption"><b>Member App</b> — Splash</div>
+<div class="caption-ms-1 screen-caption"><b>Member App</b> — Login</div>
+<div class="caption-ms-2 screen-caption"><b>Member App</b> — Onboarding</div>
+<div class="caption-ms-3 screen-caption"><b>Member App</b> — Home</div>
+<div class="caption-ms-4 screen-caption"><b>Member App</b> — Membership</div>
+<div class="caption-ms-5 screen-caption"><b>Member App</b> — Choose Plan</div>
+<div class="caption-ms-6 screen-caption"><b>Member App</b> — Payment Success</div>
+<div class="caption-ms-7 screen-caption"><b>Member App</b> — Expiry Alerts</div>
+<div class="caption-ms-8 screen-caption"><b>Member App</b> — Attendance</div>
+<div class="caption-ms-9 screen-caption"><b>Member App</b> — QR Check-in</div>
+<div class="caption-ms-10 screen-caption"><b>Member App</b> — Workout</div>
+<div class="caption-ms-11 screen-caption"><b>Member App</b> — Exercise Detail</div>
+<div class="caption-ms-12 screen-caption"><b>Member App</b> — Diet Plan</div>
+<div class="caption-ms-13 screen-caption"><b>Member App</b> — Personal Training</div>
+<div class="caption-ms-14 screen-caption"><b>Member App</b> — Notifications</div>
+<div class="caption-ms-15 screen-caption"><b>Member App</b> — Profile</div>
+        </div>
+        <div class="admin-captions-wrap">
+        <div class="caption-as-0 screen-caption"><b>Admin Panel</b> — Dashboard</div>
+<div class="caption-as-1 screen-caption"><b>Admin Panel</b> — Members</div>
+<div class="caption-as-2 screen-caption"><b>Admin Panel</b> — Member 360°</div>
+<div class="caption-as-3 screen-caption"><b>Admin Panel</b> — Expiry</div>
+<div class="caption-as-4 screen-caption"><b>Admin Panel</b> — Revenue</div>
+<div class="caption-as-5 screen-caption"><b>Admin Panel</b> — Notify Composer</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+</body>
+</html>

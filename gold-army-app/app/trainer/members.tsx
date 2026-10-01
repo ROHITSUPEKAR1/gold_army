@@ -1,0 +1,11 @@
+import { useQuery } from '@tanstack/react-query';
+import { router } from 'expo-router';
+import { useState } from 'react';
+import { Pressable, Text, TextInput, View } from 'react-native';
+import { RoleGate } from '../../components/RoleGate';
+import { RoleNav, RoleScreen, StatusBadge, roleStyles as s } from '../../components/RoleScreen';
+import { Card } from '../../components/ui';
+import { colors } from '../../constants/theme';
+import { roleRepository } from '../../services/roleRepository';
+export default function TrainerMembers() { return <RoleGate role="trainer"><TrainerMembersContent /></RoleGate>; }
+function TrainerMembersContent() { const { data } = useQuery({ queryKey: ['trainer', 'members'], queryFn: roleRepository.getTrainerMembers }); const [query, setQuery] = useState(''); const members = data?.filter((member) => member.name.toLowerCase().includes(query.toLowerCase())); return <RoleScreen title="Assigned Members" eyebrow="TRAINER · MEMBERS"><TextInput style={s.input} placeholder="Search by name" placeholderTextColor={colors.muted} value={query} onChangeText={setQuery} /><View style={{ flexDirection: 'row', gap: 8, marginVertical: 12 }}><StatusBadge label="ALL" /><StatusBadge label="ACTIVE" /><StatusBadge label="EXPIRING SOON" /></View>{members?.map((member) => <Pressable key={member.id} onPress={() => router.push(`/trainer/member/${member.id}`)}><Card style={s.card}><View style={s.row}><View style={{ flexDirection: 'row', gap: 10, alignItems: 'center', flex: 1 }}><View style={{ width: 42, height: 42, borderRadius: 21, backgroundColor: colors.surface2, alignItems: 'center', justifyContent: 'center' }}><Text style={{ color: colors.text2, fontWeight: '800' }}>{member.initials}</Text></View><View><Text style={{ color: colors.white, fontSize: 13, fontWeight: '700' }}>{member.name}</Text><Text style={s.muted}>{member.goal} · {member.weight}</Text></View></View><StatusBadge label={member.membership} /></View><Text style={[s.muted, { marginTop: 10 }]}>Attendance {member.attendance} · Next PT {member.nextSession}</Text></Card></Pressable>)}<RoleNav items={[{ label: 'Home', route: '/trainer' }, { label: 'Members', route: '/trainer/members' }, { label: 'Workouts', route: '/trainer/workouts' }, { label: 'PT', route: '/trainer/pt' }, { label: 'Profile', route: '/trainer/profile' }]} /></RoleScreen>; }

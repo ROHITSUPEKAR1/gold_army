@@ -1,0 +1,7 @@
+import { router } from 'expo-router';
+import { Text, View } from 'react-native';
+import { RoleGate } from '../../components/RoleGate';
+import { RoleNav, RoleScreen, roleStyles as s } from '../../components/RoleScreen';
+import { Card } from '../../components/ui';
+import { colors } from '../../constants/theme';
+export default function AdminMore() { return <RoleGate role="admin"><RoleScreen title="More" eyebrow="ADMIN · TOOLS"><View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}>{[['Services & Plans', '/admin/plans'], ['Subscriptions', '/admin/subscriptions'], ['Expiry Management', '/admin/expiry'], ['Trainers', '/admin/pt'], ['Workouts', '/admin/workouts'], ['Diet Plans', '/admin/diets'], ['Notifications', '/admin/notifications'], ['Reports', '/admin/reports'], ['Offers', '/admin/offers'], ['Settings', '/admin/settings']].map(([label, route]) => <Card key={label} style={{ width: '47%', padding: 15 }}><Text onPress={() => router.push(route as never)} style={{ color: colors.white, fontSize: 13, fontWeight: '700' }}>{label}</Text><Text style={{ color: colors.redBright, fontSize: 18, marginTop: 8 }}>›</Text></Card>)}</View><RoleNav items={[{ label: 'Home', route: '/admin' }, { label: 'Members', route: '/admin/members' }, { label: 'Attendance', route: '/admin/attendance' }, { label: 'Payments', route: '/admin/payments' }, { label: 'More', route: '/admin/more' }]} /></RoleScreen></RoleGate>; }

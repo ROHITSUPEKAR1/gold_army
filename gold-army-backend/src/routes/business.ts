@@ -1,0 +1,21 @@
+import { Router } from 'express';
+import { allowRoles, requireAuth } from '../middleware/auth';
+import * as business from '../modules/business';
+
+export const businessRouter = Router();
+businessRouter.get('/subscriptions', requireAuth, business.listSubscriptions);
+businessRouter.get('/subscriptions/:id', requireAuth, business.listSubscriptions);
+businessRouter.post('/subscriptions', requireAuth, allowRoles('ADMIN', 'MEMBER'), business.createSubscription);
+businessRouter.put('/subscriptions/:id', requireAuth, allowRoles('ADMIN'), business.updateSubscription);
+businessRouter.post('/subscriptions/:id/renew', requireAuth, allowRoles('ADMIN', 'MEMBER'), business.renewSubscription);
+businessRouter.post('/subscriptions/:id/extend', requireAuth, allowRoles('ADMIN'), business.extendSubscription);
+businessRouter.post('/subscriptions/:id/freeze', requireAuth, allowRoles('ADMIN'), business.freezeSubscription);
+businessRouter.post('/attendance/check-in', requireAuth, allowRoles('MEMBER'), business.checkIn);
+businessRouter.get('/attendance/member/:memberId', requireAuth, business.memberAttendance);
+businessRouter.get('/attendance/stats', requireAuth, business.attendanceStats);
+businessRouter.get('/admin/dashboard', requireAuth, allowRoles('ADMIN'), business.dashboard);
+businessRouter.get('/admin/expiry', requireAuth, allowRoles('ADMIN'), business.expiry);
+businessRouter.get('/admin/revenue', requireAuth, allowRoles('ADMIN'), business.dashboard);
+businessRouter.get('/admin/attendance', requireAuth, allowRoles('ADMIN'), business.adminAttendance);
+businessRouter.get('/admin/membership-stats', requireAuth, allowRoles('ADMIN'), business.dashboard);
+businessRouter.get('/admin/service-distribution', requireAuth, allowRoles('ADMIN'), business.dashboard);

@@ -1,0 +1,12 @@
+import { useQuery } from '@tanstack/react-query';
+import { router } from 'expo-router';
+import { Text, View } from 'react-native';
+import { RoleGate } from '../../components/RoleGate';
+import { RoleNav, RoleScreen, StatusBadge, roleStyles as s } from '../../components/RoleScreen';
+import { Card, PrimaryButton } from '../../components/ui';
+import { colors } from '../../constants/theme';
+import { roleRepository } from '../../services/roleRepository';
+import { useAuthStore } from '../../store/auth';
+
+export default function TrainerHome() { return <RoleGate role="trainer"><TrainerDashboard /></RoleGate>; }
+function TrainerDashboard() { const name = useAuthStore((state) => state.session?.user.name); const { data: sessions } = useQuery({ queryKey: ['trainer', 'sessions'], queryFn: roleRepository.getTrainerSessions }); const { data: members } = useQuery({ queryKey: ['trainer', 'members'], queryFn: roleRepository.getTrainerMembers }); const completed = sessions?.filter((item) => item.status === 'COMPLETED').length ?? 0; return <RoleScreen title={`Good morning, ${name}`} eyebrow="GOLD ARMY · TRAINER MODE"><View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}>{[['TODAY\'S PT SESSIONS', `${sessions?.length ?? 0}`], ['ASSIGNED MEMBERS', `${members?.length ?? 0}`], ['COMPLETED', `${completed}`], ['PENDING', `${(sessions?.length ?? 0) - completed}`]].map(([label, value]) => <Card key={label} style={{ width: '47%' }}><Text style={{ color: colors.muted, fontSize: 10, fontWeight: '700' }}>{label}</Text><Text style={{ color: colors.white, fontSize: 24, fontWeight: '800', marginTop: 7 }}>{value}</Text></Card>)}</View><View style={s.section}><Text style={s.heading}>Upcoming sessions</Text>{sessions?.map((session) => <Card key={session.id} style={s.card}><View style={s.row}><View><Text style={{ color: colors.white, fontSize: 13, fontWeight: '700' }}>{session.member}</Text><Text style={s.muted}>{session.time} · {session.type}</Text></View><StatusBadge label={session.status} /></View></Card>)}</View><Card><Text style={s.heading}>Quick actions</Text><PrimaryButton label="View assigned members" onPress={() => router.push('/trainer/members')} /><PrimaryButton label="Manage workouts" onPress={() => router.push('/trainer/workouts')} /></Card><RoleNav items={[{ label: 'Home', route: '/trainer' }, { label: 'Members', route: '/trainer/members' }, { label: 'Workouts', route: '/trainer/workouts' }, { label: 'PT', route: '/trainer/pt' }, { label: 'Profile', route: '/trainer/profile' }]} /></RoleScreen>; }

@@ -1,0 +1,11 @@
+import { useQuery } from '@tanstack/react-query';
+import { router } from 'expo-router';
+import { useState } from 'react';
+import { Pressable, Text, TextInput, View } from 'react-native';
+import { RoleGate } from '../../components/RoleGate';
+import { RoleNav, RoleScreen, StatusBadge, roleStyles as s } from '../../components/RoleScreen';
+import { Card, PrimaryButton } from '../../components/ui';
+import { colors } from '../../constants/theme';
+import { roleRepository } from '../../services/roleRepository';
+export default function AdminMembers() { return <RoleGate role="admin"><Members /></RoleGate>; }
+function Members() { const { data } = useQuery({ queryKey: ['admin', 'members'], queryFn: roleRepository.getAdminMembers }); const [query, setQuery] = useState(''); const filtered = data?.filter((item) => item.name.toLowerCase().includes(query.toLowerCase()) || item.phone.includes(query)); return <RoleScreen title="Members" eyebrow="ADMIN · MEMBER MANAGEMENT"><TextInput style={s.input} placeholder="Search name or phone" placeholderTextColor={colors.muted} value={query} onChangeText={setQuery} /><View style={{ flexDirection: 'row', gap: 8, marginVertical: 12 }}><StatusBadge label="ALL 1,284" /><StatusBadge label="ACTIVE" /><StatusBadge label="EXPIRING SOON" /></View><PrimaryButton label="Add member" onPress={() => undefined} />{filtered?.map((member) => <Pressable key={member.id} onPress={() => router.push(`/admin/member/${member.id}`)}><Card style={s.card}><View style={s.row}><View style={{ flex: 1 }}><Text style={{ color: colors.white, fontSize: 13, fontWeight: '700' }}>{member.name}</Text><Text style={s.muted}>{member.phone} · {member.service}</Text><Text style={s.muted}>{member.plan} · Exp {member.expiry}</Text></View><StatusBadge label={member.status} /></View><Text style={[s.muted, { marginTop: 8 }]}>Attendance {member.attendance} · {member.days > 0 ? `${member.days} days left` : member.status}</Text></Card></Pressable>)}<RoleNav items={[{ label: 'Home', route: '/admin' }, { label: 'Members', route: '/admin/members' }, { label: 'Attendance', route: '/admin/attendance' }, { label: 'Payments', route: '/admin/payments' }, { label: 'More', route: '/admin/more' }]} /></RoleScreen>; }

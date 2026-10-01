@@ -1,0 +1,5 @@
+import { Text } from 'react-native';
+import { RoleGate } from '../../components/RoleGate';
+import { RoleNav, RoleScreen, roleStyles as s } from '../../components/RoleScreen';
+import { Card } from '../../components/ui';
+export default function TrainerProfile() { return <RoleGate role="trainer"><RoleScreen title="Trainer Profile" eyebrow="TRAINER · ACCOUNT"><Card><Text style={{ color: '#FFF', fontSize: 20, fontWeight: '800' }}>Aditya Rao</Text><Text style={s.muted}>Strength & Hypertrophy Specialist</Text><Text style={s.muted}>6 years experience · 4.9 rating</Text></Card><Card><Text style={s.heading}>Settings</Text><Text style={s.muted}>Availability</Text><Text style={s.muted}>Notification preferences</Text><Text style={s.muted}>Account security</Text></Card><RoleNav items={[{ label: 'Home', route: '/trainer' }, { label: 'Members', route: '/trainer/members' }, { label: 'Workouts', route: '/trainer/workouts' }, { label: 'PT', route: '/trainer/pt' }, { label: 'Profile', route: '/trainer/profile' }]} /></RoleScreen></RoleGate>; }

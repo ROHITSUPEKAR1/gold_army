@@ -1,0 +1,10 @@
+import { useQuery } from '@tanstack/react-query';
+import { useLocalSearchParams } from 'expo-router';
+import { Text, View } from 'react-native';
+import { RoleGate } from '../../../components/RoleGate';
+import { RoleScreen, StatusBadge, roleStyles as s } from '../../../components/RoleScreen';
+import { Card, PrimaryButton } from '../../../components/ui';
+import { colors } from '../../../constants/theme';
+import { roleRepository } from '../../../services/roleRepository';
+export default function TrainerMemberProfile() { return <RoleGate role="trainer"><Profile /></RoleGate>; }
+function Profile() { const { id } = useLocalSearchParams<{ id: string }>(); const { data } = useQuery({ queryKey: ['trainer', 'members'], queryFn: roleRepository.getTrainerMembers }); const member = data?.find((item) => item.id === id) ?? data?.[0]; if (!member) return null; return <RoleScreen title={member.name} eyebrow="TRAINER · MEMBER PROFILE"><View style={{ alignItems: 'center', marginBottom: 16 }}><View style={{ width: 70, height: 70, borderRadius: 35, backgroundColor: colors.surface2, alignItems: 'center', justifyContent: 'center' }}><Text style={{ color: colors.text2, fontSize: 24, fontWeight: '800' }}>{member.initials}</Text></View><Text style={{ color: colors.white, fontSize: 17, fontWeight: '800', marginTop: 8 }}>{member.goal}</Text><StatusBadge label={member.membership} /></View><Card><Text style={s.heading}>Personal information</Text><Text style={s.muted}>Height · {member.height}</Text><Text style={s.muted}>Weight · {member.weight}</Text><Text style={s.muted}>Attendance · {member.attendance}</Text></Card><Card><Text style={s.heading}>Training overview</Text><Text style={s.muted}>Workout history · Push Day, Pull Day, Lower Body</Text><Text style={s.muted}>Diet plan · Muscle gain · Vegetarian · ₹350 budget</Text><Text style={s.muted}>PT sessions · 8 completed / 12 purchased</Text></Card><Card><Text style={s.heading}>Trainer notes</Text><Text style={s.muted}>{member.notes}</Text><PrimaryButton label="Add trainer note" onPress={() => undefined} /></Card></RoleScreen>; }
